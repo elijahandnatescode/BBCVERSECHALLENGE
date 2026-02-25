@@ -1,0 +1,18 @@
+0 verbose cli /usr/local/bin/node /usr/local/bin/npm
+1 info using npm@10.9.3
+2 info using node@v22.20.0
+3 silly config load:file:/usr/local/lib/node_modules/npm/npmrc
+4 silly config load:file:/Users/nathaneipejoseph/Documents/CHALLENGE/.npmrc
+5 silly config load:file:/Users/nathaneipejoseph/.npmrc
+6 silly config load:file:/usr/local/etc/npmrc
+7 verbose title npm run build
+8 verbose argv "run" "build" "--cache" "./.npm_cache"
+9 verbose logfile logs-max:10 dir:/Users/nathaneipejoseph/Documents/CHALLENGE/.npm_cache/_logs/2026-02-25T01_39_37_466Z-
+10 verbose logfile /Users/nathaneipejoseph/Documents/CHALLENGE/.npm_cache/_logs/2026-02-25T01_39_37_466Z-debug-0.log
+11 silly logfile done cleaning log files
+12 verbose cwd /Users/nathaneipejoseph/Documents/CHALLENGE
+13 verbose os Darwin 25.3.0
+14 verbose node v22.20.0
+15 verbose npm  v10.9.3
+16 verbose exit 127
+17 verbose code 127

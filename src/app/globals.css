@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+@theme {
+  --color-success: var(--success-color);
+  --color-error: var(--error-color);
+}
+
+@layer base {
+  :root {
+    --bg-color: #F8F8F8;
+    /* Slightly off-white ink-on-paper */
+    --text-color: #121212;
+    /* Deep black */
+    --accent-color: #121212;
+    --success-color: #00FF00;
+    --error-color: #FF3333;
+    --base-border-width: 2px;
+    --shadow-offset-hover: 4px;
+    --shadow-offset: 8px;
+
+    --background: 0 0% 97%;
+    /* #F8F8F8 equivalent */
+    --foreground: 0 0% 7%;
+    /* #121212 equivalent */
+    /* Map Tailwind's card to brutalist values */
+    --card: 0 0% 97%;
+    --card-foreground: 0 0% 7%;
+    --border: 0 0% 7%;
+
+    --radius: 0rem;
+    /* Strict Brutalism: No rounded corners */
+  }
+
+  .dark {
+    --bg-color: #121212;
+    --text-color: #F8F8F8;
+    --accent-color: #F8F8F8;
+    --success-color: #32D74B;
+    --error-color: #FF453A;
+    --background: 0 0% 7%;
+    --foreground: 0 0% 97%;
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 97%;
+    --border: 0 0% 97%;
+  }
+
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 500;
+    text-transform: uppercase;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    text-transform: uppercase;
+    line-height: 1;
+    margin: 0;
+  }
+}
+
+@layer components {
+
+  /* Marquee Styles */
+  .marquee-container {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    background-color: var(--text-color);
+    color: var(--bg-color);
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-top: 2px solid var(--text-color);
+    border-bottom: 2px solid var(--text-color);
+  }
+
+  .marquee-content {
+    display: inline-block;
+    animation: marquee 20s linear infinite;
+  }
+
+  /* Brutalist Utilities */
+  .brutalist-border {
+    border: var(--base-border-width) solid var(--text-color);
+  }
+
+  .brutalist-shadow {
+    box-shadow: var(--shadow-offset) var(--shadow-offset) 0px 0px var(--text-color);
+    transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1),
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .brutalist-shadow:hover {
+    transform: translate(calc(var(--shadow-offset) - var(--shadow-offset-hover)), calc(var(--shadow-offset) - var(--shadow-offset-hover)));
+    box-shadow: var(--shadow-offset-hover) var(--shadow-offset-hover) 0px 0px var(--text-color);
+  }
+
+  .brutalist-shadow:active {
+    transform: translate(var(--shadow-offset), var(--shadow-offset));
+    box-shadow: 0px 0px 0px 0px var(--text-color);
+  }
+
+  .success-state {
+    background-color: var(--success-color) !important;
+    color: var(--text-color) !important;
+    border-color: var(--text-color) !important;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  border-left: var(--base-border-width) solid var(--text-color);
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-color);
+  border: var(--base-border-width) solid var(--bg-color);
+}
+
+input::placeholder {
+  color: rgba(18, 18, 18, 0.4);
+}

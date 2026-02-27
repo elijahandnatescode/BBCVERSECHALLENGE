@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import {
   BookIcon, UsersIcon, SearchIcon, PlusIcon, ActivityIcon,
   BarChartIcon, LockIcon, UnlockIcon, LogOutIcon, CheckCircleIcon,
-  XIcon, CheckIcon, EditIcon,
+  XIcon, CheckIcon, EditIcon, ChevronDownIcon, ChevronRightIcon
 } from '@/components/Icons';
 
 interface Stats {
@@ -91,6 +91,7 @@ function AdminPageInner() {
   const [newLast, setNewLast] = useState('');
   const [toast, setToast] = useState('');
   const [lockingId, setLockingId] = useState<number | null>(null);
+  const [showStats, setShowStats] = useState(false);
 
   function showToast(msg: string) {
     setToast(msg);
@@ -281,42 +282,55 @@ function AdminPageInner() {
       <main style={{ maxWidth: '1040px', margin: '0 auto', padding: '28px 20px' }}>
 
         {/* Page title */}
-        <div style={{ marginBottom: '24px' }} className="reveal">
-          <h1 style={{ fontSize: '22px', fontWeight: '800', letterSpacing: '-0.03em', color: 'var(--txt)' }}>
-            {activeChallengeName}
-          </h1>
-          <p style={{ fontSize: '13px', color: 'var(--txt-2)', marginTop: '4px' }}>
-            Track and manage verse memorization progress
-          </p>
+        <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="reveal">
+          <div>
+            <h1 style={{ fontSize: '22px', fontWeight: '800', letterSpacing: '-0.03em', color: 'var(--txt)' }}>
+              {activeChallengeName}
+            </h1>
+            <p style={{ fontSize: '13px', color: 'var(--txt-2)', marginTop: '4px' }}>
+              Track and manage verse memorization progress
+            </p>
+          </div>
+          <button
+            onClick={() => setShowStats(!showStats)}
+            style={{ ...btn('ghost'), fontSize: '12px', padding: '6px 12px', border: '1px solid var(--border)', borderRadius: '99px' }}
+          >
+            {showStats ? (
+              <><span style={{ color: 'var(--txt-2)' }}>Hide overview</span><ChevronDownIcon size={14} /></>
+            ) : (
+              <><span style={{ color: 'var(--txt-2)' }}>Show overview</span><ChevronRightIcon size={14} /></>
+            )}
+          </button>
         </div>
 
-        {/* Stats row */}
-        {stats && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px', marginBottom: '24px' }}>
-            <div className="reveal-1"><StatCard icon={<UsersIcon size={14} />} label="Total" value={stats.totalParticipants} /></div>
-            <div className="reveal-2"><StatCard icon={<ActivityIcon size={14} />} label="Active" value={stats.active} color="var(--accent)" /></div>
-            {challengeId === 1 && (
-              <>
-                <div className="reveal-3"><StatCard icon={<CheckCircleIcon size={14} />} label="John 1 done" value={stats.ch1Complete} color="var(--green)" /></div>
-                <div className="reveal-4"><StatCard icon={<CheckCircleIcon size={14} />} label="John 2 done" value={stats.ch2Complete} color="var(--green)" /></div>
-              </>
-            )}
-            <div className="reveal-5"><StatCard icon={<BarChartIcon size={14} />} label="Overall" value={`${stats.overallPct}%`} color="var(--amber)" /></div>
+        {/* Stats row & Progress Bar */}
+        {showStats && stats && (
+          <div style={{ marginBottom: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px', marginBottom: '24px' }}>
+              <div className="reveal-1"><StatCard icon={<UsersIcon size={14} />} label="Total" value={stats.totalParticipants} /></div>
+              <div className="reveal-2"><StatCard icon={<ActivityIcon size={14} />} label="Active" value={stats.active} color="var(--accent)" /></div>
+              {challengeId === 1 && (
+                <>
+                  <div className="reveal-3"><StatCard icon={<CheckCircleIcon size={14} />} label="John 1 done" value={stats.ch1Complete} color="var(--green)" /></div>
+                  <div className="reveal-4"><StatCard icon={<CheckCircleIcon size={14} />} label="John 2 done" value={stats.ch2Complete} color="var(--green)" /></div>
+                </>
+              )}
+              <div className="reveal-5"><StatCard icon={<BarChartIcon size={14} />} label="Overall" value={`${stats.overallPct}%`} color="var(--amber)" /></div>
+            </div>
+
+            <div style={{ ...card, padding: '16px 20px', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <span style={{ fontSize: '12px', color: 'var(--txt-2)', fontWeight: '500' }}>Total verse completions</span>
+                <span style={{ fontSize: '12px', color: 'var(--txt-2)', fontFamily: 'monospace' }}>
+                  {stats.completedVerses} / {stats.totalVerses}
+                </span>
+              </div>
+              <ProgressBar pct={stats.overallPct} gradient />
+            </div>
           </div>
         )}
 
-        {/* Overall progress bar */}
-        {stats && (
-          <div style={{ ...card, padding: '16px 20px', marginBottom: '20px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <span style={{ fontSize: '12px', color: 'var(--txt-2)', fontWeight: '500' }}>Total verse completions</span>
-              <span style={{ fontSize: '12px', color: 'var(--txt-2)', fontFamily: 'monospace' }}>
-                {stats.completedVerses} / {stats.totalVerses}
-              </span>
-            </div>
-            <ProgressBar pct={stats.overallPct} gradient />
-          </div>
-        )}
+        {/* Toolbar */}
 
         {/* Toolbar */}
         <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -352,18 +366,20 @@ function AdminPageInner() {
         </div>
 
         {/* Add form */}
-        {addingNew && (
-          <div style={{ ...card, padding: '14px 16px', marginBottom: '12px', display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-            <input style={{ ...inputStyle, flex: 1, minWidth: '120px' }} placeholder="First name" value={newFirst} onChange={e => setNewFirst(e.target.value)} />
-            <input style={{ ...inputStyle, flex: 1, minWidth: '120px' }} placeholder="Last name" value={newLast} onChange={e => setNewLast(e.target.value)} />
-            <button onClick={handleAdd} style={btn('success')}>
-              <CheckIcon size={12} /> Save
-            </button>
-            <button onClick={() => { setAddingNew(false); setNewFirst(''); setNewLast(''); }} style={btn('ghost')}>
-              <XIcon size={12} />
-            </button>
-          </div>
-        )}
+        {
+          addingNew && (
+            <div style={{ ...card, padding: '14px 16px', marginBottom: '12px', display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <input style={{ ...inputStyle, flex: 1, minWidth: '120px' }} placeholder="First name" value={newFirst} onChange={e => setNewFirst(e.target.value)} />
+              <input style={{ ...inputStyle, flex: 1, minWidth: '120px' }} placeholder="Last name" value={newLast} onChange={e => setNewLast(e.target.value)} />
+              <button onClick={handleAdd} style={btn('success')}>
+                <CheckIcon size={12} /> Save
+              </button>
+              <button onClick={() => { setAddingNew(false); setNewFirst(''); setNewLast(''); }} style={btn('ghost')}>
+                <XIcon size={12} />
+              </button>
+            </div>
+          )
+        }
 
         {/* Count */}
         <p style={{ fontSize: '12px', color: 'var(--txt-2)', marginBottom: '8px' }}>
@@ -392,8 +408,8 @@ function AdminPageInner() {
             </div>
           )}
         </div>
-      </main>
-    </div>
+      </main >
+    </div >
   );
 }
 

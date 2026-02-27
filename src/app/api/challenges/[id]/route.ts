@@ -31,16 +31,16 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   return NextResponse.json({
     success: true,
     challenge: {
-      id:          Number(c.id),
-      name:        String(c.name),
-      book:        String(c.book),
-      chapterNum:  Number(c.chapter_num),
-      version:     String(c.version),
-      isActive:    Number(c.is_active) === 1,
+      id: Number(c.id),
+      name: String(c.name),
+      book: String(c.book),
+      chapterNum: Number(c.chapter_num),
+      version: String(c.version),
+      isActive: Number(c.is_active) === 1,
     },
     verses: versesRes.rows.map(r => ({
       verseNumber: Number(r.verse_number),
-      verseText:   String(r.verse_text),
+      verseText: String(r.verse_text),
     })),
   });
 }
@@ -85,6 +85,40 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   await db.execute({
     sql: `UPDATE challenges SET ${updates.join(', ')} WHERE id = ?`,
     args,
+  });
+
+  return NextResponse.json({ success: true });
+}
+
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const session = await getSession();
+  if (!session) return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+
+  await ensureInit();
+  const db = getDb();
+
+  const { id } = await params;
+  const challengeId = Number(id);
+
+  // Keep challenge 1 from being deleted
+  if (challengeId === 1) {
+    return NextResponse.json({ success: false, message: 'Cannot delete the default challenge' }, { status: 400 });
+  }
+
+  // Delete from progress, challenge_verses, and challenges
+  await db.execute({
+    sql: 'DELETE FROM progress WHERE challenge_id = ?',
+    args: [challengeId],
+  });
+
+  await db.execute({
+    sql: 'DELETE FROM challenge_verses WHERE challenge_id = ?',
+    args: [challengeId],
+  });
+
+  await db.execute({
+    sql: 'DELETE FROM challenges WHERE id = ?',
+    args: [challengeId],
   });
 
   return NextResponse.json({ success: true });

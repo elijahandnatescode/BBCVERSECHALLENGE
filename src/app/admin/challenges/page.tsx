@@ -39,10 +39,10 @@ function btnStyle(variant: 'primary' | 'secondary' | 'ghost' | 'danger'): React.
     padding: '8px 14px', borderRadius: '7px', fontSize: '13px', fontWeight: '500',
     cursor: 'pointer', border: '1px solid transparent',
   };
-  if (variant === 'primary')   return { ...base, background: 'var(--accent)', color: '#fff', borderColor: 'var(--accent)' };
+  if (variant === 'primary') return { ...base, background: 'var(--btn-primary-bg)', color: 'var(--btn-primary-txt)', borderColor: 'var(--btn-primary-bg)' };
   if (variant === 'secondary') return { ...base, background: 'var(--bg-hover)', color: 'var(--txt)', borderColor: 'var(--border-hi)' };
-  if (variant === 'ghost')     return { ...base, background: 'transparent', color: 'var(--txt-2)', borderColor: 'transparent' };
-  if (variant === 'danger')    return { ...base, background: 'var(--red-bg)', color: 'var(--red)', borderColor: 'var(--red-bd)' };
+  if (variant === 'ghost') return { ...base, background: 'transparent', color: 'var(--txt-2)', borderColor: 'transparent' };
+  if (variant === 'danger') return { ...base, background: 'var(--red-bg)', color: 'var(--red)', borderColor: 'var(--red-bd)' };
   return base;
 }
 
@@ -53,15 +53,18 @@ export default function ChallengesPage() {
   const [showNewForm, setShowNewForm] = useState(false);
 
   // New challenge form state
+  const [formMode, setFormMode] = useState<'library' | 'custom'>('library');
   const books = getBooks();
   const [newBook, setNewBook] = useState(books[0] ?? 'John');
   const [newChapter, setNewChapter] = useState<number>(getChapters(books[0] ?? 'John')[0] ?? 3);
+  const [customName, setCustomName] = useState('');
+  const [customText, setCustomText] = useState('');
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
 
   const chapters = getChapters(newBook);
   const previewPassage = getPassage(newBook, newChapter);
-  const alreadyAdded = challenges.some(c => c.book === newBook && c.chapterNum === newChapter);
+  const alreadyAdded = formMode === 'library' && challenges.some(c => c.book === newBook && c.chapterNum === newChapter);
 
   useEffect(() => { load(); }, []);
 
@@ -86,18 +89,30 @@ export default function ChallengesPage() {
   }
 
   async function handleCreate() {
-    if (alreadyAdded) return;
+    if (formMode === 'library' && alreadyAdded) return;
+    if (formMode === 'custom' && (!customName.trim() || !customText.trim())) {
+      setCreateError('Name and custom text are required');
+      return;
+    }
+
     setCreating(true);
     setCreateError('');
+
+    const body = formMode === 'library'
+      ? { book: newBook, chapterNum: newChapter }
+      : { customName: customName.trim(), customText: customText.trim() };
+
     const res = await fetch('/api/challenges', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ book: newBook, chapterNum: newChapter }),
+      body: JSON.stringify(body),
     });
     const data = await res.json();
     setCreating(false);
     if (data.success) {
       setShowNewForm(false);
+      setCustomName('');
+      setCustomText('');
       await load();
     } else {
       setCreateError(data.message ?? 'Failed to create challenge');
@@ -109,6 +124,15 @@ export default function ChallengesPage() {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ isActive: !c.isActive }),
+    });
+    await load();
+  }
+
+  async function handleDelete(c: Challenge) {
+    if (!confirm(`Are you sure you want to delete "${c.name}"? This will remove all progress for this challenge.`)) return;
+
+    await fetch(`/api/challenges/${c.id}`, {
+      method: 'DELETE',
     });
     await load();
   }
@@ -135,47 +159,90 @@ export default function ChallengesPage() {
         {/* New challenge form */}
         {showNewForm && (
           <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-hi)', borderRadius: '12px', padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--txt)' }}>Add a new challenge</div>
-
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-              {/* Book picker */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '11px', fontWeight: '600', color: 'var(--txt-2)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Book</label>
-                <select
-                  value={newBook}
-                  onChange={e => handleBookChange(e.target.value)}
-                  style={{ padding: '8px 12px', borderRadius: '7px', border: '1px solid var(--border-hi)', background: 'var(--bg-input)', color: 'var(--txt)', fontSize: '13px', minWidth: '140px' }}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--txt)' }}>Add a new challenge</div>
+              <div style={{ display: 'flex', gap: '8px', background: 'var(--bg-input)', padding: '4px', borderRadius: '8px', border: '1px solid var(--border-hi)' }}>
+                <button
+                  onClick={() => { setFormMode('library'); setCreateError(''); }}
+                  style={{ padding: '4px 12px', fontSize: '11px', fontWeight: '600', borderRadius: '4px', background: formMode === 'library' ? 'var(--bg-card)' : 'transparent', color: formMode === 'library' ? 'var(--txt)' : 'var(--txt-3)', boxShadow: formMode === 'library' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', cursor: 'pointer', border: 'none' }}
                 >
-                  {books.map(b => <option key={b} value={b}>{b}</option>)}
-                </select>
-              </div>
-
-              {/* Chapter picker */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '11px', fontWeight: '600', color: 'var(--txt-2)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Chapter</label>
-                <select
-                  value={newChapter}
-                  onChange={e => handleChapterChange(Number(e.target.value))}
-                  style={{ padding: '8px 12px', borderRadius: '7px', border: '1px solid var(--border-hi)', background: 'var(--bg-input)', color: 'var(--txt)', fontSize: '13px', minWidth: '100px' }}
+                  NKJV Library
+                </button>
+                <button
+                  onClick={() => { setFormMode('custom'); setCreateError(''); }}
+                  style={{ padding: '4px 12px', fontSize: '11px', fontWeight: '600', borderRadius: '4px', background: formMode === 'custom' ? 'var(--bg-card)' : 'transparent', color: formMode === 'custom' ? 'var(--txt)' : 'var(--txt-3)', boxShadow: formMode === 'custom' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', cursor: 'pointer', border: 'none' }}
                 >
-                  {chapters.map(ch => <option key={ch} value={ch}>{ch}</option>)}
-                </select>
+                  Custom Text
+                </button>
               </div>
             </div>
 
-            {/* Passage preview */}
-            {previewPassage && (
-              <div style={{ background: 'var(--bg-input)', border: '1px solid var(--border)', borderRadius: '8px', padding: '12px 14px' }}>
-                <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>
-                  {previewPassage.displayName} &middot; {previewPassage.verses.length} verses &middot; NKJV
+            {formMode === 'library' ? (
+              <>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                  {/* Book picker */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <label style={{ fontSize: '11px', fontWeight: '600', color: 'var(--txt-2)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Book</label>
+                    <select
+                      value={newBook}
+                      onChange={e => handleBookChange(e.target.value)}
+                      style={{ padding: '8px 12px', borderRadius: '7px', border: '1px solid var(--border-hi)', background: 'var(--bg-input)', color: 'var(--txt)', fontSize: '13px', minWidth: '140px' }}
+                    >
+                      {books.map(b => <option key={b} value={b}>{b}</option>)}
+                    </select>
+                  </div>
+
+                  {/* Chapter picker */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <label style={{ fontSize: '11px', fontWeight: '600', color: 'var(--txt-2)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Chapter</label>
+                    <select
+                      value={newChapter}
+                      onChange={e => handleChapterChange(Number(e.target.value))}
+                      style={{ padding: '8px 12px', borderRadius: '7px', border: '1px solid var(--border-hi)', background: 'var(--bg-input)', color: 'var(--txt)', fontSize: '13px', minWidth: '100px' }}
+                    >
+                      {chapters.map(ch => <option key={ch} value={ch}>{ch}</option>)}
+                    </select>
+                  </div>
                 </div>
-                <div style={{ fontSize: '12px', color: 'var(--txt-2)', lineHeight: 1.6, fontStyle: 'italic' }}>
-                  &ldquo;{previewPassage.verses[0]?.text}&rdquo;
+
+                {/* Passage preview */}
+                {previewPassage && (
+                  <div style={{ background: 'var(--bg-input)', border: '1px solid var(--border)', borderRadius: '8px', padding: '12px 14px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>
+                      {previewPassage.displayName} &middot; {previewPassage.verses.length} verses &middot; NKJV
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'var(--txt-2)', lineHeight: 1.6, fontStyle: 'italic' }}>
+                      &ldquo;{previewPassage.verses[0]?.text}&rdquo;
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ fontSize: '11px', fontWeight: '600', color: 'var(--txt-2)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Challenge Name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Memory Verses Week 1"
+                    value={customName}
+                    onChange={e => setCustomName(e.target.value)}
+                    style={{ padding: '8px 12px', borderRadius: '7px', border: '1px solid var(--border-hi)', background: 'var(--bg-input)', color: 'var(--txt)', fontSize: '13px', width: '100%' }}
+                  />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ fontSize: '11px', fontWeight: '600', color: 'var(--txt-2)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Verses (One per line)</label>
+                  <textarea
+                    placeholder="Paste the verses here. Each new line will be treated as a separate verse in the challenge."
+                    value={customText}
+                    onChange={e => setCustomText(e.target.value)}
+                    rows={6}
+                    style={{ padding: '8px 12px', borderRadius: '7px', border: '1px solid var(--border-hi)', background: 'var(--bg-input)', color: 'var(--txt)', fontSize: '13px', width: '100%', resize: 'vertical' }}
+                  />
                 </div>
               </div>
             )}
 
-            {alreadyAdded && (
+            {alreadyAdded && formMode === 'library' && (
               <div style={{ fontSize: '12px', color: 'var(--amber)', background: 'var(--amber-bg)', border: '1px solid var(--amber-bd)', borderRadius: '7px', padding: '8px 12px' }}>
                 This passage is already a challenge.
               </div>
@@ -193,8 +260,8 @@ export default function ChallengesPage() {
               </button>
               <button
                 onClick={handleCreate}
-                disabled={creating || alreadyAdded || !previewPassage}
-                style={{ ...btnStyle('primary'), opacity: (creating || alreadyAdded || !previewPassage) ? 0.5 : 1 }}
+                disabled={creating || (formMode === 'library' && (alreadyAdded || !previewPassage)) || (formMode === 'custom' && (!customName.trim() || !customText.trim()))}
+                style={{ ...btnStyle('primary'), opacity: (creating || (formMode === 'library' && (alreadyAdded || !previewPassage)) || (formMode === 'custom' && (!customName.trim() || !customText.trim()))) ? 0.5 : 1 }}
               >
                 {creating ? 'Creating…' : `Create challenge →`}
               </button>
@@ -215,7 +282,7 @@ export default function ChallengesPage() {
               Active challenges
             </div>
             {challenges.map(c => (
-              <ChallengeCard key={c.id} challenge={c} onToggleActive={() => toggleActive(c)} />
+              <ChallengeCard key={c.id} challenge={c} onToggleActive={() => toggleActive(c)} onDelete={() => handleDelete(c)} />
             ))}
           </div>
         )}
@@ -224,7 +291,7 @@ export default function ChallengesPage() {
   );
 }
 
-function ChallengeCard({ challenge: c, onToggleActive }: { challenge: Challenge; onToggleActive: () => void }) {
+function ChallengeCard({ challenge: c, onToggleActive, onDelete }: { challenge: Challenge; onToggleActive: () => void; onDelete: () => void }) {
   return (
     <div style={{
       background: 'var(--bg-card)', border: '1px solid var(--border)',
@@ -246,7 +313,7 @@ function ChallengeCard({ challenge: c, onToggleActive }: { challenge: Challenge;
             </span>
           </div>
           <div style={{ fontSize: '12px', color: 'var(--txt-3)', marginBottom: '12px' }}>
-            {c.verseCount} verses &middot; {c.version} &middot; {c.totalParticipants} participants
+            {c.verseCount} verses &middot; {c.book === 'Custom' ? 'Custom Text' : c.version} &middot; {c.totalParticipants} participants
           </div>
 
           {/* Progress bar */}
@@ -263,12 +330,22 @@ function ChallengeCard({ challenge: c, onToggleActive }: { challenge: Challenge;
           </div>
         </div>
 
-        <button
-          onClick={onToggleActive}
-          style={{ ...btnStyle('secondary'), fontSize: '12px', padding: '6px 10px', flexShrink: 0 }}
-        >
-          {c.isActive ? 'Deactivate' : 'Activate'}
-        </button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button
+            onClick={onToggleActive}
+            style={{ ...btnStyle('secondary'), fontSize: '12px', padding: '6px 10px', flexShrink: 0 }}
+          >
+            {c.isActive ? 'Deactivate' : 'Activate'}
+          </button>
+          {c.id !== 1 && (
+            <button
+              onClick={onDelete}
+              style={{ ...btnStyle('danger'), fontSize: '12px', padding: '6px 10px', flexShrink: 0 }}
+            >
+              Delete
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

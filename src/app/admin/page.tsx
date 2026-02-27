@@ -66,7 +66,7 @@ function btn(variant: 'primary' | 'secondary' | 'ghost' | 'success' | 'danger', 
     whiteSpace: 'nowrap' as const, textTransform: 'uppercase',
     boxShadow: '4px 4px 0px 0px var(--text-color)',
   };
-  if (variant === 'primary') return { ...base, background: 'var(--success-color, var(--text-color))', color: 'var(--bg-color)', boxShadow: 'none', transform: 'translate(4px, 4px)', borderColor: 'var(--text-color)' };
+  if (variant === 'primary') return { ...base, background: 'var(--btn-primary-bg, var(--text-color))', color: 'var(--btn-primary-txt, var(--bg-color))', boxShadow: 'none', transform: 'translate(4px, 4px)', borderColor: 'var(--text-color)' };
   if (variant === 'secondary') return { ...base, background: 'var(--bg-color)', color: 'var(--text-color)' };
   if (variant === 'success') return { ...base, background: 'var(--success-color)', color: 'var(--bg-color)' };
   if (variant === 'danger') return { ...base, background: 'var(--error-color)', color: 'var(--bg-color)' };

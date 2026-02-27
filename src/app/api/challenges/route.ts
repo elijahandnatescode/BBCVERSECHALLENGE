@@ -42,15 +42,15 @@ export async function GET() {
     const overallPct = possibleTotal > 0 ? Math.round((completedV / possibleTotal) * 100) : 0;
 
     return {
-      id:          cid,
-      name:        String(row.name),
+      id: cid,
+      name: String(row.name),
       description: row.description ? String(row.description) : null,
-      book:        String(row.book),
-      chapterNum:  Number(row.chapter_num),
-      version:     String(row.version),
-      isActive:    Number(row.is_active) === 1,
-      sortOrder:   Number(row.sort_order),
-      createdAt:   String(row.created_at),
+      book: String(row.book),
+      chapterNum: Number(row.chapter_num),
+      version: String(row.version),
+      isActive: Number(row.is_active) === 1,
+      sortOrder: Number(row.sort_order),
+      createdAt: String(row.created_at),
       verseCount,
       totalParticipants: totalP,
       overallPct,
@@ -67,47 +67,78 @@ export async function POST(req: NextRequest) {
   await ensureInit();
   const db = getDb();
 
-  const { book, chapterNum, name, description } = await req.json() as {
-    book: string;
-    chapterNum: number;
+  const { book, chapterNum, name, description, customText, customName } = await req.json() as {
+    book?: string;
+    chapterNum?: number;
     name?: string;
     description?: string;
+    customText?: string;
+    customName?: string;
   };
-
-  if (!book || !chapterNum) {
-    return NextResponse.json({ success: false, message: 'book and chapterNum are required' }, { status: 400 });
-  }
-
-  // Check for duplicate
-  const dupRes = await db.execute({
-    sql: 'SELECT id FROM challenges WHERE book = ? AND chapter_num = ?',
-    args: [book, chapterNum],
-  });
-  if (dupRes.rows.length > 0) {
-    return NextResponse.json({ success: false, message: 'This passage already exists as a challenge' }, { status: 409 });
-  }
-
-  const passage = getPassage(book, chapterNum);
-  if (!passage) {
-    return NextResponse.json({ success: false, message: 'Passage not found in library' }, { status: 404 });
-  }
 
   // Get next sort_order
   const orderRes = await db.execute('SELECT COALESCE(MAX(sort_order), 0) + 1 as next_order FROM challenges');
   const nextOrder = Number(orderRes.rows[0]?.next_order ?? 1);
 
-  const displayName = name ?? passage.displayName;
+  let challengeId: number;
+  let versesToInsert: Array<{ v: number; text: string }> = [];
+  let effectiveChapterNum = chapterNum ?? 1;
 
-  const insertRes = await db.execute({
-    sql: `INSERT INTO challenges (name, description, book, chapter_num, version, sort_order)
-          VALUES (?, ?, ?, ?, 'NKJV', ?)`,
-    args: [displayName, description ?? null, book, chapterNum, nextOrder],
-  });
+  if (customText && customName) {
+    // Custom challenge
+    const displayName = customName;
+    const lines = customText
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line.length > 0);
 
-  const challengeId = Number(insertRes.lastInsertRowid);
+    if (lines.length === 0) {
+      return NextResponse.json({ success: false, message: 'Custom text is empty' }, { status: 400 });
+    }
+
+    versesToInsert = lines.map((text, i) => ({ v: i + 1, text }));
+
+    const insertRes = await db.execute({
+      sql: `INSERT INTO challenges (name, description, book, chapter_num, version, sort_order)
+            VALUES (?, ?, ?, ?, 'NKJV', ?)`,
+      args: [displayName, description ?? null, 'Custom', 1, nextOrder], // Default to 'Custom' book, chapter 1
+    });
+
+    challengeId = Number(insertRes.lastInsertRowid);
+    effectiveChapterNum = 1;
+
+  } else if (book && chapterNum) {
+    // Normal library passage challenge
+    // Check for duplicate
+    const dupRes = await db.execute({
+      sql: 'SELECT id FROM challenges WHERE book = ? AND chapter_num = ?',
+      args: [book, chapterNum],
+    });
+    if (dupRes.rows.length > 0) {
+      return NextResponse.json({ success: false, message: 'This passage already exists as a challenge' }, { status: 409 });
+    }
+
+    const passage = getPassage(book, chapterNum);
+    if (!passage) {
+      return NextResponse.json({ success: false, message: 'Passage not found in library' }, { status: 404 });
+    }
+
+    versesToInsert = passage.verses;
+    const displayName = name ?? passage.displayName;
+
+    const insertRes = await db.execute({
+      sql: `INSERT INTO challenges (name, description, book, chapter_num, version, sort_order)
+            VALUES (?, ?, ?, ?, 'NKJV', ?)`,
+      args: [displayName, description ?? null, book, chapterNum, nextOrder],
+    });
+
+    challengeId = Number(insertRes.lastInsertRowid);
+  } else {
+    return NextResponse.json({ success: false, message: 'Must provide either book/chapter OR customText/customName' }, { status: 400 });
+  }
 
   // Insert all verses
-  for (const v of passage.verses) {
+  for (const v of versesToInsert) {
     await db.execute({
       sql: `INSERT OR IGNORE INTO challenge_verses (challenge_id, verse_number, verse_text) VALUES (?, ?, ?)`,
       args: [challengeId, v.v, v.text],
@@ -122,7 +153,7 @@ export async function POST(req: NextRequest) {
       FROM participants
       CROSS JOIN challenge_verses cv WHERE cv.challenge_id = ?
     `,
-    args: [chapterNum, challengeId, challengeId],
+    args: [effectiveChapterNum, challengeId, challengeId],
   });
 
   return NextResponse.json({ success: true, challengeId });

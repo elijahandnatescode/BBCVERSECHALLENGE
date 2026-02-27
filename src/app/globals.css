@@ -14,6 +14,10 @@
     --accent-color: #121212;
     --success-color: #00FF00;
     --error-color: #FF3333;
+
+    --btn-primary-bg: #2563eb;
+    --btn-primary-txt: #facc15;
+
     --base-border-width: 2px;
     --shadow-offset-hover: 4px;
     --shadow-offset: 8px;
@@ -37,6 +41,10 @@
     --accent-color: #F8F8F8;
     --success-color: #32D74B;
     --error-color: #FF453A;
+
+    --btn-primary-bg: var(--accent-color);
+    --btn-primary-txt: var(--bg-color);
+
     --background: 0 0% 7%;
     --foreground: 0 0% 97%;
     --card: 0 0% 7%;

@@ -70,11 +70,11 @@ function btnStyle(variant: 'primary' | 'secondary' | 'ghost' | 'success' | 'dang
     padding: '9px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: '500',
     cursor: 'pointer', border: '1px solid transparent',
   };
-  if (variant === 'primary')   return { ...base, background: 'var(--accent)', color: '#fff', borderColor: 'var(--accent)' };
-  if (variant === 'secondary') return { ...base, background: 'var(--bg-hover)', color: 'var(--txt)', borderColor: 'var(--border-hi)' };
-  if (variant === 'ghost')     return { ...base, background: 'transparent', color: 'var(--txt-2)', borderColor: 'transparent' };
-  if (variant === 'success')   return { ...base, background: 'var(--green-bg)', color: 'var(--green)', borderColor: 'var(--green-bd)' };
-  if (variant === 'danger')    return { ...base, background: 'var(--red-bg)', color: 'var(--red)', borderColor: 'var(--red-bd)' };
+  if (variant === 'primary')   return { ...base, background: 'var(--accent)', color: '#fff', border: '1px solid var(--accent)' };
+  if (variant === 'secondary') return { ...base, background: 'var(--bg-hover)', color: 'var(--txt)', border: '1px solid var(--border-hi)' };
+  if (variant === 'ghost')     return { ...base, background: 'transparent', color: 'var(--txt-2)', border: '1px solid transparent' };
+  if (variant === 'success')   return { ...base, background: 'var(--green-bg)', color: 'var(--green)', border: '1px solid var(--green-bd)' };
+  if (variant === 'danger')    return { ...base, background: 'var(--red-bg)', color: 'var(--red)', border: '1px solid var(--red-bd)' };
   return base;
 }
 

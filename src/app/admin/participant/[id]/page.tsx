@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import {
   ChevronLeftIcon, LockIcon, EditIcon,
-  CheckIcon, XIcon, MicIcon, CheckCircleIcon, BookIcon, BarChartIcon,
+  CheckIcon, XIcon, MicIcon, CheckCircleIcon, BookIcon, BarChartIcon, CircleIcon,
 } from '@/components/Icons';
 import dynamic from 'next/dynamic';
 import { JOHN1_VERSES, JOHN2_VERSES, CH2_TOTAL } from '@/lib/verseData';
@@ -49,7 +49,7 @@ function btn(variant: 'primary' | 'secondary' | 'ghost' | 'success' | 'danger', 
     whiteSpace: 'nowrap' as const, textTransform: 'uppercase',
     boxShadow: '4px 4px 0px 0px var(--text-color)',
   };
-  if (variant === 'primary') return { ...base, background: 'var(--btn-primary-bg, var(--text-color))', color: 'var(--btn-primary-txt, var(--bg-color))', boxShadow: 'none', transform: 'translate(4px, 4px)', borderColor: 'var(--text-color)' };
+  if (variant === 'primary') return { ...base, background: 'var(--btn-primary-bg, var(--text-color))', color: 'var(--btn-primary-txt, var(--bg-color))', boxShadow: 'none', transform: 'translate(4px, 4px)', border: 'var(--base-border-width) solid var(--text-color)' };
   if (variant === 'secondary') return { ...base, background: 'var(--bg-color)', color: 'var(--text-color)' };
   if (variant === 'success') return { ...base, background: 'var(--success-color)', color: 'var(--bg-color)' };
   if (variant === 'danger') return { ...base, background: 'var(--error-color)', color: 'var(--bg-color)' };
@@ -309,6 +309,7 @@ function ParticipantPageInner() {
 
   const lockedByOther = participant?.isLocked && !participant?.isLockedByMe;
   const canEdit = !!participant?.isLockedByMe;
+  const canRename = !!admin;
   const isOptedOut = participant?.optedOutChallenges.includes(challengeId) ?? false;
 
   const incompleteInChapter = currentVerseList.filter(v => !isDone(activeChapter, v.verse)).length;
@@ -395,7 +396,7 @@ function ParticipantPageInner() {
         <button onClick={() => router.push(`/admin/insights?c=${challengeId}`)} style={{ ...btn('ghost'), gap: '5px' }}>
           <BarChartIcon size={13} /> Insights
         </button>
-        {canEdit && !editing && (
+        {canRename && !editing && (
           <button onClick={() => setEditing(true)} style={{ ...btn('ghost'), gap: '5px' }}>
             <EditIcon size={13} /> Rename
           </button>
@@ -691,15 +692,15 @@ function VerseRow({ chapter, verse, text, done, canEdit, last, onToggle, onRecor
         onClick={onToggle}
         disabled={!canEdit}
         style={{
-          width: '22px', height: '22px', borderRadius: '5px', flexShrink: 0, marginTop: '1px',
+          width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0, marginTop: '1px',
           background: done ? 'var(--green)' : 'transparent',
           border: `1.5px solid ${done ? 'var(--green)' : canEdit ? 'var(--border-hi)' : 'var(--border)'}`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           cursor: canEdit ? 'pointer' : 'default',
-          color: '#0c1a12',
+          color: done ? '#0c1a12' : 'var(--txt-3)',
         }}
       >
-        {done && <CheckIcon size={12} />}
+        {done ? <CheckIcon size={12} /> : <CircleIcon size={12} />}
       </button>
 
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -720,11 +721,11 @@ function VerseRow({ chapter, verse, text, done, canEdit, last, onToggle, onRecor
           style={{
             display: 'inline-flex', alignItems: 'center', gap: '4px',
             padding: '5px 9px', borderRadius: '7px', fontSize: '12px', fontWeight: '500',
-            flexShrink: 0, marginTop: '1px', border: '1px solid transparent',
+            flexShrink: 0, marginTop: '1px',
             cursor: canEdit ? 'pointer' : 'default',
             background: canEdit ? 'var(--accent-bg)' : 'transparent',
             color: canEdit ? 'var(--accent)' : 'var(--txt-3)',
-            borderColor: canEdit ? 'var(--accent-bd)' : 'transparent',
+            border: canEdit ? '1px solid var(--accent-bd)' : '1px solid transparent',
           }}
         >
           <MicIcon size={12} />

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import {
   BookIcon, UsersIcon, SearchIcon, PlusIcon, ActivityIcon,
   BarChartIcon, LockIcon, UnlockIcon, LogOutIcon, CheckCircleIcon,
-  XIcon, CheckIcon,
+  XIcon, CheckIcon, EditIcon,
 } from '@/components/Icons';
 
 interface Stats {
@@ -66,7 +66,7 @@ function btn(variant: 'primary' | 'secondary' | 'ghost' | 'success' | 'danger', 
     whiteSpace: 'nowrap' as const, textTransform: 'uppercase',
     boxShadow: '4px 4px 0px 0px var(--text-color)',
   };
-  if (variant === 'primary') return { ...base, background: 'var(--btn-primary-bg, var(--text-color))', color: 'var(--btn-primary-txt, var(--bg-color))', boxShadow: 'none', transform: 'translate(4px, 4px)', borderColor: 'var(--text-color)' };
+  if (variant === 'primary') return { ...base, background: 'var(--btn-primary-bg, var(--text-color))', color: 'var(--btn-primary-txt, var(--bg-color))', boxShadow: 'none', transform: 'translate(4px, 4px)', border: 'var(--base-border-width) solid var(--text-color)' };
   if (variant === 'secondary') return { ...base, background: 'var(--bg-color)', color: 'var(--text-color)' };
   if (variant === 'success') return { ...base, background: 'var(--success-color)', color: 'var(--bg-color)' };
   if (variant === 'danger') return { ...base, background: 'var(--error-color)', color: 'var(--bg-color)' };
@@ -95,6 +95,21 @@ function AdminPageInner() {
   function showToast(msg: string) {
     setToast(msg);
     setTimeout(() => setToast(''), 2800);
+  }
+
+  async function handleRename(p: Participant, newFirst: string, newLast: string) {
+    const res = await fetch(`/api/participants/${p.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ firstName: newFirst.trim(), lastName: newLast.trim() }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast('Name updated');
+      fetchAll(search);
+    } else {
+      showToast(data.message || 'Failed to update name');
+    }
   }
 
   const fetchAll = useCallback(async (q = '') => {
@@ -371,6 +386,7 @@ function AdminPageInner() {
                   locking={lockingId === p.id}
                   onOpen={() => handleLockAndOpen(p)}
                   onUnlock={() => handleUnlock(p)}
+                  onRename={(first, last) => handleRename(p, first, last)}
                 />
               ))}
             </div>
@@ -426,13 +442,41 @@ function ProgressBar({ pct, gradient, height = 5 }: { pct: number; gradient?: bo
 }
 
 /* ── ParticipantRow ───────────────────────────────────────────────────────── */
-function ParticipantRow({ p, last, locking, onOpen, onUnlock }: {
+function ParticipantRow({ p, last, locking, onOpen, onUnlock, onRename }: {
   p: Participant; last: boolean; locking: boolean;
   onOpen: () => void; onUnlock: () => void;
+  onRename: (first: string, last: string) => Promise<void>;
 }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editFirst, setEditFirst] = useState(p.firstName);
+  const [editLast, setEditLast] = useState(p.lastName);
+  const [saving, setSaving] = useState(false);
+
+  // Sync state if p changes externally (e.g. from websocket or polling)
+  useEffect(() => {
+    if (!isEditing) {
+      setEditFirst(p.firstName);
+      setEditLast(p.lastName);
+    }
+  }, [p.firstName, p.lastName, isEditing]);
+
   const pct = p.totalCount > 0 ? Math.round((p.completedCount / p.totalCount) * 100) : 0;
   const done = pct === 100 && p.totalCount > 0;
   const lockedByOther = p.isLocked && !p.isLockedByMe;
+
+  async function handleSave() {
+    if (!editFirst.trim() || !editLast.trim()) return;
+    setSaving(true);
+    await onRename(editFirst, editLast);
+    setSaving(false);
+    setIsEditing(false);
+  }
+
+  function handleCancel() {
+    setIsEditing(false);
+    setEditFirst(p.firstName);
+    setEditLast(p.lastName);
+  }
 
   return (
     <div style={{
@@ -455,15 +499,49 @@ function ParticipantRow({ p, last, locking, onOpen, onUnlock }: {
 
       {/* Name + progress */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '5px', flexWrap: 'wrap' }}>
-          <span style={{ fontSize: '13px', fontWeight: '500', color: 'var(--txt)' }}>
-            {p.firstName} {p.lastName}
-          </span>
-          {done && <Badge label="Complete" bg="var(--green-bg)" bd="var(--green-bd)" color="var(--green)" />}
-          {p.optedOut && <Badge label="Opted out" bg="var(--bg-hover)" bd="var(--border)" color="var(--txt-3)" />}
-          {p.isLockedByMe && <Badge label="Editing" bg="var(--accent-bg)" bd="var(--accent-bd)" color="var(--accent)" />}
-          {lockedByOther && <Badge label={p.lockedByUsername || 'Locked'} bg="var(--amber-bg)" bd="var(--amber-bd)" color="var(--amber)" />}
-        </div>
+        {isEditing ? (
+          <div style={{ display: 'flex', gap: '6px', marginBottom: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <input
+              style={{ ...inputStyle, width: '120px', padding: '6px 10px', fontSize: '13px', boxShadow: '2px 2px 0px 0px var(--text-color)' }}
+              value={editFirst}
+              onChange={e => setEditFirst(e.target.value)}
+              placeholder="First"
+              disabled={saving}
+              autoFocus
+            />
+            <input
+              style={{ ...inputStyle, width: '120px', padding: '6px 10px', fontSize: '13px', boxShadow: '2px 2px 0px 0px var(--text-color)' }}
+              value={editLast}
+              onChange={e => setEditLast(e.target.value)}
+              placeholder="Last"
+              disabled={saving}
+            />
+            <button onClick={handleSave} disabled={saving} style={{ ...btn('success'), padding: '6px 10px', fontSize: '12px', boxShadow: '2px 2px 0px 0px var(--text-color)' }}>
+              {saving ? '...' : <CheckIcon size={12} />}
+            </button>
+            <button onClick={handleCancel} disabled={saving} style={{ ...btn('secondary'), padding: '6px 10px', fontSize: '12px', boxShadow: '2px 2px 0px 0px var(--text-color)' }}>
+              <XIcon size={12} />
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '5px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '13px', fontWeight: '500', color: 'var(--txt)' }}>
+              {p.firstName} {p.lastName}
+            </span>
+            <button
+              onClick={() => setIsEditing(true)}
+              disabled={lockedByOther || locking}
+              style={{ background: 'transparent', border: 'none', padding: '0 4px', cursor: lockedByOther ? 'not-allowed' : 'pointer', color: lockedByOther ? 'var(--txt-3)' : 'var(--txt-2)', display: 'flex', alignItems: 'center' }}
+              title={lockedByOther ? `Locked by ${p.lockedByUsername}` : 'Rename inline'}
+            >
+              <EditIcon size={13} />
+            </button>
+            {done && <Badge label="Complete" bg="var(--green-bg)" bd="var(--green-bd)" color="var(--green)" />}
+            {p.optedOut && <Badge label="Opted out" bg="var(--bg-hover)" bd="var(--border)" color="var(--txt-3)" />}
+            {p.isLockedByMe && <Badge label="Editing" bg="var(--accent-bg)" bd="var(--accent-bd)" color="var(--accent)" />}
+            {lockedByOther && <Badge label={p.lockedByUsername || 'Locked'} bg="var(--amber-bg)" bd="var(--amber-bd)" color="var(--amber)" />}
+          </div>
+        )}
         {!p.optedOut && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{ flex: 1 }}>
@@ -480,7 +558,7 @@ function ParticipantRow({ p, last, locking, onOpen, onUnlock }: {
       </div>
 
       {/* Actions */}
-      <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+      <div style={{ display: 'flex', gap: '6px', flexShrink: 0, opacity: isEditing ? 0.3 : 1, pointerEvents: isEditing ? 'none' : 'auto' }}>
         <button
           onClick={onOpen}
           disabled={lockedByOther || locking}
@@ -496,7 +574,7 @@ function ParticipantRow({ p, last, locking, onOpen, onUnlock }: {
         {p.isLockedByMe && (
           <button
             onClick={onUnlock}
-            style={{ ...btn('ghost'), color: 'var(--accent)', borderColor: 'var(--accent-bd)' }}
+            style={{ ...btn('ghost'), color: 'var(--accent)', border: 'var(--base-border-width) solid var(--accent-bd)' }}
             title="Release lock"
           >
             <LockIcon size={13} />

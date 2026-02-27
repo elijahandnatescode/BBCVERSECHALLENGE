@@ -47,7 +47,7 @@ function btnStyle(variant: 'primary' | 'secondary' | 'ghost' | 'success' | 'dang
     boxShadow: '4px 4px 0px 0px var(--text-color)', transition: 'none',
   };
 
-  if (variant === 'primary') return { ...base, background: 'var(--text-color)', color: 'var(--bg-color)', borderColor: 'var(--text-color)' };
+  if (variant === 'primary') return { ...base, background: 'var(--text-color)', color: 'var(--bg-color)', border: 'var(--base-border-width) solid var(--text-color)' };
   if (variant === 'secondary') return { ...base, background: 'var(--bg-color)', color: 'var(--text-color)' };
   if (variant === 'ghost') return { ...base, background: 'transparent', color: 'var(--text-color)', border: 'none', boxShadow: 'none' };
   if (variant === 'success') return { ...base, background: 'var(--success-color)', color: 'var(--text-color)' };

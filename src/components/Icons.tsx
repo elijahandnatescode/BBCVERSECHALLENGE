@@ -85,6 +85,12 @@ export const CheckCircleIcon = icon2([
   'M22 4L12 14.01l-3-3',
 ]);
 
+export const CircleIcon = ({ size = 16, ...props }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <circle cx="12" cy="12" r="10" />
+  </svg>
+);
+
 export const XIcon = icon('M18 6L6 18M6 6l12 12');
 
 export const XCircleIcon = icon2([

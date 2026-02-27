@@ -39,10 +39,10 @@ function btnStyle(variant: 'primary' | 'secondary' | 'ghost' | 'danger'): React.
     padding: '8px 14px', borderRadius: '7px', fontSize: '13px', fontWeight: '500',
     cursor: 'pointer', border: '1px solid transparent',
   };
-  if (variant === 'primary') return { ...base, background: 'var(--btn-primary-bg)', color: 'var(--btn-primary-txt)', borderColor: 'var(--btn-primary-bg)' };
-  if (variant === 'secondary') return { ...base, background: 'var(--bg-hover)', color: 'var(--txt)', borderColor: 'var(--border-hi)' };
-  if (variant === 'ghost') return { ...base, background: 'transparent', color: 'var(--txt-2)', borderColor: 'transparent' };
-  if (variant === 'danger') return { ...base, background: 'var(--red-bg)', color: 'var(--red)', borderColor: 'var(--red-bd)' };
+  if (variant === 'primary') return { ...base, background: 'var(--btn-primary-bg)', color: 'var(--btn-primary-txt)', border: '1px solid var(--btn-primary-bg)' };
+  if (variant === 'secondary') return { ...base, background: 'var(--bg-hover)', color: 'var(--txt)', border: '1px solid var(--border-hi)' };
+  if (variant === 'ghost') return { ...base, background: 'transparent', color: 'var(--txt-2)', border: '1px solid transparent' };
+  if (variant === 'danger') return { ...base, background: 'var(--red-bg)', color: 'var(--red)', border: '1px solid var(--red-bd)' };
   return base;
 }
 

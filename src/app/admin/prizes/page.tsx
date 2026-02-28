@@ -165,8 +165,8 @@ function PrizesPageInner() {
                                     }).map(name => (
                                         <span key={name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px', border: '1px solid var(--border)', padding: '6px 10px', borderRadius: '6px', fontSize: '13px', color: 'var(--txt-2)' }}>
                                             {name}
-                                            <select style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '4px', fontSize: '11px', padding: '2px 4px', color: 'var(--txt)', cursor: 'pointer' }}>
-                                                <option value="" disabled selected>Size</option>
+                                            <select defaultValue="" style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '4px', fontSize: '11px', padding: '2px 4px', color: 'var(--txt)', cursor: 'pointer' }}>
+                                                <option value="" disabled>Size</option>
                                                 <option value="YS">YS</option>
                                                 <option value="YM">YM</option>
                                                 <option value="YL">YL</option>

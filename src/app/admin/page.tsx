@@ -7,6 +7,7 @@ import {
   BarChartIcon, LockIcon, UnlockIcon, LogOutIcon, CheckCircleIcon,
   XIcon, CheckIcon, EditIcon, ChevronDownIcon, ChevronRightIcon
 } from '@/components/Icons';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface Stats {
   totalParticipants: number;
@@ -326,23 +327,72 @@ function AdminPageInner() {
                   {stats.completedVerses} / {stats.totalVerses}
                 </span>
               </div>
-              <ProgressBar pct={stats.overallPct} gradient />
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px', gap: '8px' }}>
+                <ThemeToggle
+                  style={{
+                    width: 'auto',
+                    height: '28px',
+                    padding: '4px 8px',
+                    borderRadius: '0',
+                    boxShadow: 'none',
+                    border: 'var(--base-border-width) solid var(--text-color)',
+                    background: 'transparent',
+                    color: 'var(--text-color)'
+                  }}
+                />
+                <button
+                  onClick={() => setShowAvatars(!showAvatars)}
+                  style={{ ...btn('ghost'), fontSize: '12px', padding: '4px 8px' }}
+                >
+                  {showAvatars ? 'Hide avatars' : 'Show avatars'}
+                </button>
+              </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
-              <button
-                onClick={() => setShowAvatars(!showAvatars)}
-                style={{ ...btn('ghost'), fontSize: '12px', padding: '4px 8px' }}
-              >
-                {showAvatars ? 'Hide avatars' : 'Show avatars'}
+            {/* Toolbar (Filters & Add) */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', flexWrap: 'wrap', alignItems: 'center' }}>
+
+              {/* Filter */}
+              {(['all', 'complete', 'incomplete'] as Filter[]).map(f => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  style={filter === f ? btn('primary') : btn('secondary')}
+                >
+                  {f === 'all' ? `All (${participants.length})` : f === 'complete' ? 'Complete' : 'In progress'}
+                </button>
+              ))}
+
+              <button onClick={() => setAddingNew(v => !v)} style={btn('secondary')}>
+                <PlusIcon size={13} />
+                Add
               </button>
             </div>
+
+            {/* Add form */}
+            {
+              addingNew && (
+                <div style={{ ...card, padding: '14px 16px', marginBottom: '12px', display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <input style={{ ...inputStyle, flex: 1, minWidth: '120px' }} placeholder="First name" value={newFirst} onChange={e => setNewFirst(e.target.value)} />
+                  <input style={{ ...inputStyle, flex: 1, minWidth: '120px' }} placeholder="Last name" value={newLast} onChange={e => setNewLast(e.target.value)} />
+                  <button onClick={handleAdd} style={btn('success')}>
+                    <CheckIcon size={12} /> Save
+                  </button>
+                  <button onClick={() => { setAddingNew(false); setNewFirst(''); setNewLast(''); }} style={btn('ghost')}>
+                    <XIcon size={12} />
+                  </button>
+                </div>
+              )
+            }
+
+            {/* Count */}
+            <p style={{ fontSize: '12px', color: 'var(--txt-2)', marginBottom: '8px' }}>
+              {filtered.length} participant{filtered.length !== 1 ? 's' : ''}
+            </p>
           </div>
         )}
 
-        {/* Toolbar */}
-
-        {/* Toolbar */}
+        {/* Global Toolbar */}
         <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', flexWrap: 'wrap', alignItems: 'center' }}>
           {/* Search */}
           <div style={{ position: 'relative', flex: '1', minWidth: '200px' }}>
@@ -357,44 +407,7 @@ function AdminPageInner() {
               style={{ ...inputStyle, paddingLeft: '32px' }}
             />
           </div>
-
-          {/* Filter */}
-          {(['all', 'complete', 'incomplete'] as Filter[]).map(f => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              style={filter === f ? btn('primary') : btn('secondary')}
-            >
-              {f === 'all' ? `All (${participants.length})` : f === 'complete' ? 'Complete' : 'In progress'}
-            </button>
-          ))}
-
-          <button onClick={() => setAddingNew(v => !v)} style={btn('secondary')}>
-            <PlusIcon size={13} />
-            Add
-          </button>
         </div>
-
-        {/* Add form */}
-        {
-          addingNew && (
-            <div style={{ ...card, padding: '14px 16px', marginBottom: '12px', display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-              <input style={{ ...inputStyle, flex: 1, minWidth: '120px' }} placeholder="First name" value={newFirst} onChange={e => setNewFirst(e.target.value)} />
-              <input style={{ ...inputStyle, flex: 1, minWidth: '120px' }} placeholder="Last name" value={newLast} onChange={e => setNewLast(e.target.value)} />
-              <button onClick={handleAdd} style={btn('success')}>
-                <CheckIcon size={12} /> Save
-              </button>
-              <button onClick={() => { setAddingNew(false); setNewFirst(''); setNewLast(''); }} style={btn('ghost')}>
-                <XIcon size={12} />
-              </button>
-            </div>
-          )
-        }
-
-        {/* Count */}
-        <p style={{ fontSize: '12px', color: 'var(--txt-2)', marginBottom: '8px' }}>
-          {filtered.length} participant{filtered.length !== 1 ? 's' : ''}
-        </p>
 
         {/* List */}
         <div style={{ ...card, overflow: 'hidden' }}>
@@ -419,8 +432,8 @@ function AdminPageInner() {
             </div>
           )}
         </div>
-      </main >
-    </div >
+      </main>
+    </div>
   );
 }
 

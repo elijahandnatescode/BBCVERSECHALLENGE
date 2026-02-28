@@ -20,7 +20,6 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={spaceGrotesk.className} suppressHydrationWarning>
         {children}
-        <ThemeToggle />
       </body>
     </html>
   );

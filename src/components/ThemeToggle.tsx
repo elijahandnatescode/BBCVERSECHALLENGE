@@ -1,11 +1,19 @@
+/* ── ThemeToggle ──────────────────────────────────────────────────────────── */
 "use client";
 
 import { useEffect, useState } from "react";
 
-export function ThemeToggle() {
+interface ThemeToggleProps {
+    className?: string;
+    style?: React.CSSProperties;
+}
+
+export function ThemeToggle({ className = "", style = {} }: ThemeToggleProps) {
     const [isDark, setIsDark] = useState(false);
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
+        setMounted(true);
         // Check local storage or system preference
         const storedTheme = localStorage.getItem("theme");
         const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -28,14 +36,35 @@ export function ThemeToggle() {
         }
     };
 
+    // Prevent hydration mismatch by not rendering the icon until mounted
+    if (!mounted) {
+        return (
+            <button
+                style={{
+                    width: "48px",
+                    height: "48px",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: "var(--text-color)",
+                    color: "var(--bg-color)",
+                    border: "2px solid var(--text-color)",
+                    cursor: "pointer",
+                    boxShadow: "4px 4px 0px 0px var(--text-color)",
+                    transition: "transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1)",
+                    ...style
+                }}
+                className={`brutalist-shadow hover:translate-x-[2px] hover:translate-y-[2px] ${className}`}
+                aria-label="Toggle dark mode"
+            />
+        );
+    }
+
     return (
         <button
             onClick={toggleTheme}
             style={{
-                position: "fixed",
-                bottom: "24px",
-                right: "24px",
-                zIndex: 10000,
                 width: "48px",
                 height: "48px",
                 borderRadius: "50%",
@@ -48,8 +77,9 @@ export function ThemeToggle() {
                 cursor: "pointer",
                 boxShadow: "4px 4px 0px 0px var(--text-color)",
                 transition: "transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1)",
+                ...style
             }}
-            className="brutalist-shadow hover:translate-x-[2px] hover:translate-y-[2px]"
+            className={`brutalist-shadow hover:translate-x-[2px] hover:translate-y-[2px] ${className}`}
             aria-label="Toggle dark mode"
         >
             {isDark ? (

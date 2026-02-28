@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import {
   BookIcon, UsersIcon, SearchIcon, PlusIcon, ActivityIcon,
   BarChartIcon, LockIcon, UnlockIcon, LogOutIcon, CheckCircleIcon,
-  XIcon, CheckIcon, EditIcon, ChevronDownIcon, ChevronRightIcon
+  XIcon, CheckIcon, EditIcon, ChevronDownIcon, ChevronRightIcon, GiftIcon
 } from '@/components/Icons';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
@@ -268,6 +268,9 @@ function AdminPageInner() {
         )}
 
         <div style={{ flex: 1 }} />
+        <button onClick={() => router.push('/admin/prizes')} style={{ ...btn('ghost'), gap: '5px' }}>
+          <GiftIcon size={13} /> Prizes
+        </button>
         <button onClick={() => router.push('/admin/challenges')} style={{ ...btn('ghost'), gap: '5px' }}>
           Challenges
         </button>

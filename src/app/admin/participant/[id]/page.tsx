@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import {
   ChevronLeftIcon, LockIcon, EditIcon,
-  CheckIcon, XIcon, MicIcon, CheckCircleIcon, BookIcon, BarChartIcon, CircleIcon,
+  CheckIcon, XIcon, MicIcon, CheckCircleIcon, BookIcon, BarChartIcon, CircleIcon, GiftIcon,
 } from '@/components/Icons';
 import dynamic from 'next/dynamic';
 import { JOHN1_VERSES, JOHN2_VERSES, CH2_TOTAL } from '@/lib/verseData';
@@ -393,6 +393,9 @@ function ParticipantPageInner() {
           </div>
         )}
         <div style={{ flex: 1 }} />
+        <button onClick={() => router.push('/admin/prizes')} style={{ ...btn('ghost'), gap: '5px' }}>
+          <GiftIcon size={13} /> Prizes
+        </button>
         <button onClick={() => router.push(`/admin/insights?c=${challengeId}`)} style={{ ...btn('ghost'), gap: '5px' }}>
           <BarChartIcon size={13} /> Insights
         </button>

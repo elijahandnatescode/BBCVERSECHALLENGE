@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ChevronLeftIcon, BookIcon, LogOutIcon, BarChartIcon } from '@/components/Icons';
+import { ChevronLeftIcon, BookIcon, LogOutIcon, BarChartIcon, GiftIcon } from '@/components/Icons';
 import { CH1_TOTAL, CH2_TOTAL } from '@/lib/verseData';
 
 interface VerseDifficulty {
@@ -176,6 +176,9 @@ function InsightsPageInner() {
         )}
 
         <div style={{ flex: 1 }} />
+        <button onClick={() => router.push('/admin/prizes')} style={{ ...btn('ghost'), gap: '5px' }}>
+          <GiftIcon size={14} /> Prizes
+        </button>
         <span style={{ fontSize: '12px', color: 'var(--txt-2)' }}>{admin?.username}</span>
       </header>
 

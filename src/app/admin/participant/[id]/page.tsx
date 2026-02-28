@@ -7,7 +7,7 @@ import {
   CheckIcon, XIcon, MicIcon, CheckCircleIcon, BookIcon, BarChartIcon, CircleIcon, GiftIcon,
 } from '@/components/Icons';
 import dynamic from 'next/dynamic';
-import { JOHN1_VERSES, JOHN2_VERSES, CH2_TOTAL } from '@/lib/verseData';
+import { JOHN1_VERSES, JOHN2_VERSES, CH1_TOTAL, CH2_TOTAL } from '@/lib/verseData';
 
 const VoiceRecorder = dynamic(() => import('@/components/VoiceRecorder'), { ssr: false });
 const MultiVerseRecorder = dynamic(() => import('@/components/MultiVerseRecorder'), { ssr: false });
@@ -300,7 +300,7 @@ function ParticipantPageInner() {
   let totalPossible: number;
   if (challengeId === 1) {
     totalDone = ch1Done + ch2Done;
-    totalPossible = 8 + CH2_TOTAL;
+    totalPossible = CH1_TOTAL + CH2_TOTAL;
   } else {
     totalDone = progress.filter(r => r.completed === 1).length;
     totalPossible = challengeVerses.length;
@@ -535,7 +535,7 @@ function ParticipantPageInner() {
           <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
             {([1, 2] as const).map(ch => {
               const done = ch === 1 ? ch1Done : ch2Done;
-              const total = ch === 1 ? 8 : CH2_TOTAL;
+              const total = ch === 1 ? CH1_TOTAL : CH2_TOTAL;
               const pct = Math.round((done / total) * 100);
               const active = activeChapter === ch;
               return (

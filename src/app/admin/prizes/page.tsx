@@ -28,6 +28,7 @@ function PrizesPageInner() {
     const [admin, setAdmin] = useState<{ username: string } | null>(null);
     const [data2025, setData2025] = useState<PrizeData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [expanded, setExpanded] = useState({ all: false, atLeastOne: false, participated: false });
 
     useEffect(() => {
         async function load() {
@@ -97,91 +98,121 @@ function PrizesPageInner() {
 
                         {/* Category 3 */}
                         <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden' }}>
-                            <div style={{ background: 'rgba(235, 186, 52, 0.1)', borderBottom: '1px solid var(--border)', padding: '16px 20px' }}>
-                                <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#b38209', marginBottom: '4px' }}>Did Both Passages (All Ages)</h3>
-                                <p style={{ fontSize: '13px', color: 'var(--txt-2)' }}>1 John 1 and 1 John 2:1-10</p>
-                                <div style={{ fontSize: '12px', fontWeight: '600', color: '#b38209', marginTop: '8px' }}>
-                                    {data2025?.allPassages.length ?? 0} participants
+                            <div
+                                onClick={() => setExpanded(prev => ({ ...prev, all: !prev.all }))}
+                                style={{ cursor: 'pointer', background: 'rgba(235, 186, 52, 0.1)', borderBottom: expanded.all ? '1px solid var(--border)' : 'none', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                            >
+                                <div>
+                                    <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#b38209', marginBottom: '4px' }}>Did Both Passages (All Ages)</h3>
+                                    <p style={{ fontSize: '13px', color: 'var(--txt-2)' }}>1 John 1 and 1 John 2:1-10</p>
+                                    <div style={{ fontSize: '12px', fontWeight: '600', color: '#b38209', marginTop: '8px' }}>
+                                        {data2025?.allPassages.length ?? 0} participants
+                                    </div>
+                                </div>
+                                <div style={{ color: '#b38209', transform: expanded.all ? 'rotate(90deg)' : 'rotate(-90deg)', transition: 'transform 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <ChevronLeftIcon size={20} />
                                 </div>
                             </div>
-                            <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                {data2025?.allPassages.length ? (
-                                    [...data2025.allPassages].sort((a, b) => {
-                                        const lastA = a.split(' ').pop() || '';
-                                        const lastB = b.split(' ').pop() || '';
-                                        return lastA.localeCompare(lastB);
-                                    }).map(name => (
-                                        <span key={name} style={{ background: 'var(--bg-hover)', padding: '8px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', color: 'var(--txt)' }}>
-                                            {name}
-                                        </span>
-                                    ))
-                                ) : (
-                                    <span style={{ fontSize: '13px', color: 'var(--txt-3)', fontStyle: 'italic' }}>No participants yet.</span>
-                                )}
-                            </div>
+                            {expanded.all && (
+                                <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    {data2025?.allPassages.length ? (
+                                        [...data2025.allPassages].sort((a, b) => {
+                                            const lastA = a.split(' ').pop() || '';
+                                            const lastB = b.split(' ').pop() || '';
+                                            return lastA.localeCompare(lastB);
+                                        }).map(name => (
+                                            <span key={name} style={{ background: 'var(--bg-hover)', padding: '8px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', color: 'var(--txt)' }}>
+                                                {name}
+                                            </span>
+                                        ))
+                                    ) : (
+                                        <span style={{ fontSize: '13px', color: 'var(--txt-3)', fontStyle: 'italic' }}>No participants yet.</span>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
                         {/* Category 2 */}
                         <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden' }}>
-                            <div style={{ background: 'var(--bg-hover)', borderBottom: '1px solid var(--border)', padding: '16px 20px' }}>
-                                <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--txt)', marginBottom: '4px' }}>Completed 1 John 1 OR 1 John 2:1-10</h3>
-                                <p style={{ fontSize: '13px', color: 'var(--txt-2)' }}>Completed 1 John 1 OR 1 John 2:1-10</p>
-                                <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--txt)', marginTop: '8px' }}>
-                                    {data2025?.atLeastOne.length ?? 0} participants
+                            <div
+                                onClick={() => setExpanded(prev => ({ ...prev, atLeastOne: !prev.atLeastOne }))}
+                                style={{ cursor: 'pointer', background: 'var(--bg-hover)', borderBottom: expanded.atLeastOne ? '1px solid var(--border)' : 'none', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                            >
+                                <div>
+                                    <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--txt)', marginBottom: '4px' }}>Completed 1 John 1 OR 1 John 2:1-10</h3>
+                                    <p style={{ fontSize: '13px', color: 'var(--txt-2)' }}>Completed 1 John 1 OR 1 John 2:1-10</p>
+                                    <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--txt)', marginTop: '8px' }}>
+                                        {data2025?.atLeastOne.length ?? 0} participants
+                                    </div>
+                                </div>
+                                <div style={{ color: 'var(--txt)', transform: expanded.atLeastOne ? 'rotate(90deg)' : 'rotate(-90deg)', transition: 'transform 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <ChevronLeftIcon size={20} />
                                 </div>
                             </div>
-                            <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                {data2025?.atLeastOne.length ? (
-                                    [...data2025.atLeastOne].sort((a, b) => {
-                                        const lastA = a.split(' ').pop() || '';
-                                        const lastB = b.split(' ').pop() || '';
-                                        return lastA.localeCompare(lastB);
-                                    }).map(name => (
-                                        <span key={name} style={{ background: 'var(--bg-hover)', padding: '8px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', color: 'var(--txt)' }}>
-                                            {name}
-                                        </span>
-                                    ))
-                                ) : (
-                                    <span style={{ fontSize: '13px', color: 'var(--txt-3)', fontStyle: 'italic' }}>No participants yet.</span>
-                                )}
-                            </div>
+                            {expanded.atLeastOne && (
+                                <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    {data2025?.atLeastOne.length ? (
+                                        [...data2025.atLeastOne].sort((a, b) => {
+                                            const lastA = a.split(' ').pop() || '';
+                                            const lastB = b.split(' ').pop() || '';
+                                            return lastA.localeCompare(lastB);
+                                        }).map(name => (
+                                            <span key={name} style={{ background: 'var(--bg-hover)', padding: '8px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', color: 'var(--txt)' }}>
+                                                {name}
+                                            </span>
+                                        ))
+                                    ) : (
+                                        <span style={{ fontSize: '13px', color: 'var(--txt-3)', fontStyle: 'italic' }}>No participants yet.</span>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
                         {/* Category 1 */}
                         <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden' }}>
-                            <div style={{ borderBottom: '1px solid var(--border)', padding: '16px 20px' }}>
-                                <h3 style={{ fontSize: '15px', fontWeight: '600', color: 'var(--txt)', marginBottom: '4px' }}>Participated</h3>
-                                <p style={{ fontSize: '13px', color: 'var(--txt-2)' }}>Said at least one verse.</p>
-                                <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--txt-2)', marginTop: '8px' }}>
-                                    {data2025?.participated.length ?? 0} participants
+                            <div
+                                onClick={() => setExpanded(prev => ({ ...prev, participated: !prev.participated }))}
+                                style={{ cursor: 'pointer', borderBottom: expanded.participated ? '1px solid var(--border)' : 'none', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                            >
+                                <div>
+                                    <h3 style={{ fontSize: '15px', fontWeight: '600', color: 'var(--txt)', marginBottom: '4px' }}>Participated</h3>
+                                    <p style={{ fontSize: '13px', color: 'var(--txt-2)' }}>Said at least one verse.</p>
+                                    <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--txt-2)', marginTop: '8px' }}>
+                                        {data2025?.participated.length ?? 0} participants
+                                    </div>
+                                </div>
+                                <div style={{ color: 'var(--txt-2)', transform: expanded.participated ? 'rotate(90deg)' : 'rotate(-90deg)', transition: 'transform 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <ChevronLeftIcon size={20} />
                                 </div>
                             </div>
-                            <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                {data2025?.participated.length ? (
-                                    [...data2025.participated].sort((a, b) => {
-                                        const lastA = a.split(' ').pop() || '';
-                                        const lastB = b.split(' ').pop() || '';
-                                        return lastA.localeCompare(lastB);
-                                    }).map(name => (
-                                        <span key={name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px', border: '1px solid var(--border)', padding: '6px 10px', borderRadius: '6px', fontSize: '13px', color: 'var(--txt-2)' }}>
-                                            {name}
-                                            <select defaultValue="" style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '4px', fontSize: '11px', padding: '2px 4px', color: 'var(--txt)', cursor: 'pointer' }}>
-                                                <option value="" disabled>Size</option>
-                                                <option value="YS">YS</option>
-                                                <option value="YM">YM</option>
-                                                <option value="YL">YL</option>
-                                                <option value="YXL">YXL</option>
-                                                <option value="S">S</option>
-                                                <option value="M">M</option>
-                                                <option value="L">L</option>
-                                                <option value="XL">XL</option>
-                                            </select>
-                                        </span>
-                                    ))
-                                ) : (
-                                    <span style={{ fontSize: '13px', color: 'var(--txt-3)', fontStyle: 'italic' }}>No participants yet.</span>
-                                )}
-                            </div>
+                            {expanded.participated && (
+                                <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    {data2025?.participated.length ? (
+                                        [...data2025.participated].sort((a, b) => {
+                                            const lastA = a.split(' ').pop() || '';
+                                            const lastB = b.split(' ').pop() || '';
+                                            return lastA.localeCompare(lastB);
+                                        }).map(name => (
+                                            <span key={name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px', border: '1px solid var(--border)', padding: '6px 10px', borderRadius: '6px', fontSize: '13px', color: 'var(--txt-2)' }}>
+                                                {name}
+                                                <select defaultValue="" style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '4px', fontSize: '11px', padding: '2px 4px', color: 'var(--txt)', cursor: 'pointer' }}>
+                                                    <option value="" disabled>Size</option>
+                                                    <option value="YS">YS</option>
+                                                    <option value="YM">YM</option>
+                                                    <option value="YL">YL</option>
+                                                    <option value="YXL">YXL</option>
+                                                    <option value="S">S</option>
+                                                    <option value="M">M</option>
+                                                    <option value="L">L</option>
+                                                    <option value="XL">XL</option>
+                                                </select>
+                                            </span>
+                                        ))
+                                    ) : (
+                                        <span style={{ fontSize: '13px', color: 'var(--txt-3)', fontStyle: 'italic' }}>No participants yet.</span>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
                     </div>

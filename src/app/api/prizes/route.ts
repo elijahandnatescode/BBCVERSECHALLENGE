@@ -42,7 +42,8 @@ export async function GET(req: NextRequest) {
         }
         if (didJ1 || didJ2) {
             atLeastOne.push(name);
-        } else if (j1 > 0 || j2 > 0) {
+        }
+        if (j1 > 0 || j2 > 0) {
             participated.push(name);
         }
     }

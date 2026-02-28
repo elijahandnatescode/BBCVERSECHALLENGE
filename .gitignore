@@ -7,3 +7,6 @@ node_modules/
 .env.local
 .DS_Store
 pnpm-lock.yaml
+migrate.js
+test_api.js
+test_export_import.js

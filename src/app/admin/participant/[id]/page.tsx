@@ -372,7 +372,6 @@ function ParticipantPageInner() {
         padding: '0 20px', height: '52px',
         borderBottom: '1px solid var(--border)',
         background: 'var(--bg-card)',
-        position: 'sticky', top: 0, zIndex: 100,
       }}>
         <button onClick={() => router.push(`/admin?c=${challengeId}`)} style={{ ...btn('ghost'), gap: '4px' }}>
           <ChevronLeftIcon size={14} /> Back

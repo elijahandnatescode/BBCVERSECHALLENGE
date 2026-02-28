@@ -244,7 +244,6 @@ function AdminPageInner() {
         padding: '0 20px', height: '52px',
         borderBottom: '1px solid var(--border)',
         background: 'var(--bg-card)',
-        position: 'sticky', top: 0, zIndex: 100,
       }}>
         <div style={{ color: 'var(--accent)', display: 'flex' }}>
           <BookIcon size={17} />

@@ -9,20 +9,19 @@ export async function GET(req: NextRequest) {
     await ensureInit();
     const db = getDb();
 
-    // We are currently hardcoded for Challenge 1 (2025 data)
-    // 1 John 1 verses: 1 to 10
-    // 1 John 2 verses 1 to 11: 101 to 111
+    // Challenge 1: 1 John 1 (chapter=1, verses 1-10) and 1 John 2 (chapter=2, verses 1-29)
+    // "Did Both Passages" criteria: completed all of 1 John 1:1-10 AND 1 John 2:1-10
 
     const result = await db.execute(`
     SELECT 
       p.id, p.first_name, p.last_name,
       (SELECT COUNT(*) FROM progress WHERE participant_id = p.id AND challenge_id = 1 AND completed = 1) as completed_count,
-      (SELECT COUNT(DISTINCT verse) FROM progress WHERE participant_id = p.id AND challenge_id = 1 AND completed = 1 AND verse BETWEEN 1 AND 10) as john1_count,
-      (SELECT COUNT(DISTINCT verse) FROM progress WHERE participant_id = p.id AND challenge_id = 1 AND completed = 1 AND verse BETWEEN 101 AND 111) as john2_count
+      (SELECT COUNT(DISTINCT verse) FROM progress WHERE participant_id = p.id AND challenge_id = 1 AND chapter = 1 AND completed = 1 AND verse BETWEEN 1 AND 10) as john1_count,
+      (SELECT COUNT(DISTINCT verse) FROM progress WHERE participant_id = p.id AND challenge_id = 1 AND chapter = 2 AND completed = 1 AND verse BETWEEN 1 AND 10) as john2_count
     FROM participants p
     WHERE 
       (SELECT COUNT(*) FROM progress WHERE participant_id = p.id AND challenge_id = 1 AND completed = 1) > 0
-    ORDER BY p.last_name ASC, p.first_name ASC
+    ORDER BY LOWER(p.last_name) ASC, LOWER(p.first_name) ASC
   `);
 
     const participated: string[] = [];
@@ -35,8 +34,8 @@ export async function GET(req: NextRequest) {
         const j1 = Number(row.john1_count);
         const j2 = Number(row.john2_count);
 
-        const didJ1 = j1 === 10;
-        const didJ2 = j2 === 11;
+        const didJ1 = j1 === 10;  // All 10 verses of 1 John 1
+        const didJ2 = j2 === 10;  // First 10 verses of 1 John 2
 
         if (didJ1 && didJ2) {
             allPassages.push(name);

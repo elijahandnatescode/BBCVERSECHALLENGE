@@ -98,8 +98,8 @@ function PrizesPageInner() {
                         {/* Category 3 */}
                         <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden' }}>
                             <div style={{ background: 'rgba(235, 186, 52, 0.1)', borderBottom: '1px solid var(--border)', padding: '16px 20px' }}>
-                                <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#b38209', marginBottom: '4px' }}>Did All Passages</h3>
-                                <p style={{ fontSize: '13px', color: 'var(--txt-2)' }}>Completed 1 John 1 AND 1 John 2:1-11</p>
+                                <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#b38209', marginBottom: '4px' }}>Did Both Passages (All Ages)</h3>
+                                <p style={{ fontSize: '13px', color: 'var(--txt-2)' }}>1 John 1 and 1 John 2:1-10</p>
                                 <div style={{ fontSize: '12px', fontWeight: '600', color: '#b38209', marginTop: '8px' }}>
                                     {data2025?.allPassages.length ?? 0} participants
                                 </div>

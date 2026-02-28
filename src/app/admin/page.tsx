@@ -625,6 +625,7 @@ function ParticipantRow({ p, last, locking, showAvatars = true, onOpen, onUnlock
               style={{ ...inputStyle, width: '120px', padding: '6px 10px', fontSize: '13px', boxShadow: '2px 2px 0px 0px var(--text-color)' }}
               value={editFirst}
               onChange={e => setEditFirst(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') handleSave(); if (e.key === 'Escape') handleCancel(); }}
               placeholder="First"
               disabled={saving}
               autoFocus
@@ -633,6 +634,7 @@ function ParticipantRow({ p, last, locking, showAvatars = true, onOpen, onUnlock
               style={{ ...inputStyle, width: '120px', padding: '6px 10px', fontSize: '13px', boxShadow: '2px 2px 0px 0px var(--text-color)' }}
               value={editLast}
               onChange={e => setEditLast(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') handleSave(); if (e.key === 'Escape') handleCancel(); }}
               placeholder="Last"
               disabled={saving}
             />

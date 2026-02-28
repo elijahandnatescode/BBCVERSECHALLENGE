@@ -202,6 +202,65 @@ function AdminPageInner() {
     }
   }
 
+  async function handleExport() {
+    try {
+      const res = await fetch('/api/export');
+      const data = await res.json();
+      if (data.success) {
+        const jsonStr = JSON.stringify(data.data, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `bbc_verse_participants_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Export successful');
+      } else {
+        showToast('Export failed: ' + data.message);
+      }
+    } catch (e) {
+      showToast('Export error');
+    }
+  }
+
+  async function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!window.confirm('WARNING: Importing will OVERWRITE the entire database and erase all current data. Are you absolutely sure you want to proceed?')) {
+      e.target.value = ''; // reset
+      return;
+    }
+
+    try {
+      const text = await file.text();
+      const payload = JSON.parse(text);
+
+      setLoading(true);
+      const res = await fetch('/api/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        showToast('Import successful');
+        await fetchAll(search);
+      } else {
+        showToast('Import failed: ' + data.message);
+        setLoading(false);
+      }
+    } catch (err) {
+      showToast('Invalid JSON file');
+      setLoading(false);
+    }
+    e.target.value = ''; // reset
+  }
+
   function switchChallenge(id: number) {
     router.push(`/admin?c=${id}`);
   }
@@ -369,6 +428,23 @@ function AdminPageInner() {
                 <PlusIcon size={13} />
                 Add
               </button>
+
+              <div style={{ width: '1px', height: '24px', background: 'var(--border)', margin: '0 4px' }} />
+
+              <button onClick={handleExport} style={btn('secondary')}>
+                Export JSON
+              </button>
+
+              <label style={btn('secondary')}>
+                Import JSON
+                <input
+                  type="file"
+                  accept=".json"
+                  style={{ display: 'none' }}
+                  onChange={handleImport}
+                />
+              </label>
+
             </div>
 
             {/* Add form */}

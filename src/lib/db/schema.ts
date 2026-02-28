@@ -86,8 +86,8 @@ export async function ensureInit() {
   `);
 
   // Idempotent column migrations
-  await db.execute('ALTER TABLE progress ADD COLUMN challenge_id INTEGER NOT NULL DEFAULT 1').catch(() => {});
-  await db.execute('ALTER TABLE verse_attempts ADD COLUMN challenge_id INTEGER NOT NULL DEFAULT 1').catch(() => {});
+  await db.execute('ALTER TABLE progress ADD COLUMN challenge_id INTEGER NOT NULL DEFAULT 1').catch(() => { });
+  await db.execute('ALTER TABLE verse_attempts ADD COLUMN challenge_id INTEGER NOT NULL DEFAULT 1').catch(() => { });
 
   // Seed default challenge (John 1 & 2) if no challenges exist
   const countRes = await db.execute('SELECT COUNT(*) as cnt FROM challenges');
@@ -103,11 +103,11 @@ async function seedDefaultChallenge(db: ReturnType<typeof getDb>) {
   // Insert the challenge row with id=1
   await db.execute({
     sql: `INSERT INTO challenges (id, name, description, book, chapter_num, version, sort_order)
-          VALUES (1, 'John 1 & 2', 'The original BBC Verse Challenge passage', 'John', 1, 'NIV', 0)`,
+          VALUES (1, '1 John 1 & 2', 'The original BBC Verse Challenge passage', '1 John', 1, 'NKJV', 0)`,
     args: [],
   });
 
-  // Insert John 1 verses (stored with a synthetic chapter encoding: ch1 = verses 1-8)
+  // Insert 1 John 1 verses (stored with a synthetic chapter encoding: ch1 = verses 1-10)
   for (const v of JOHN1_VERSES) {
     await db.execute({
       sql: `INSERT OR IGNORE INTO challenge_verses (challenge_id, verse_number, verse_text) VALUES (?, ?, ?)`,
@@ -115,7 +115,7 @@ async function seedDefaultChallenge(db: ReturnType<typeof getDb>) {
     });
   }
 
-  // Insert John 2 verses (verse numbers 101-125 to distinguish from ch1 within same challenge)
+  // Insert 1 John 2 verses (verse numbers 101-129 to distinguish from ch1 within same challenge)
   for (const [vStr, text] of Object.entries(JOHN2_VERSES)) {
     const v = Number(vStr);
     await db.execute({

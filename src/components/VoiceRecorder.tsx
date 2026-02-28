@@ -70,11 +70,11 @@ function btnStyle(variant: 'primary' | 'secondary' | 'ghost' | 'success' | 'dang
     padding: '9px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: '500',
     cursor: 'pointer', border: '1px solid transparent',
   };
-  if (variant === 'primary')   return { ...base, background: 'var(--accent)', color: '#fff', border: '1px solid var(--accent)' };
+  if (variant === 'primary') return { ...base, background: 'var(--accent)', color: '#fff', border: '1px solid var(--accent)' };
   if (variant === 'secondary') return { ...base, background: 'var(--bg-hover)', color: 'var(--txt)', border: '1px solid var(--border-hi)' };
-  if (variant === 'ghost')     return { ...base, background: 'transparent', color: 'var(--txt-2)', border: '1px solid transparent' };
-  if (variant === 'success')   return { ...base, background: 'var(--green-bg)', color: 'var(--green)', border: '1px solid var(--green-bd)' };
-  if (variant === 'danger')    return { ...base, background: 'var(--red-bg)', color: 'var(--red)', border: '1px solid var(--red-bd)' };
+  if (variant === 'ghost') return { ...base, background: 'transparent', color: 'var(--txt-2)', border: '1px solid transparent' };
+  if (variant === 'success') return { ...base, background: 'var(--green-bg)', color: 'var(--green)', border: '1px solid var(--green-bd)' };
+  if (variant === 'danger') return { ...base, background: 'var(--red-bg)', color: 'var(--red)', border: '1px solid var(--red-bd)' };
   return base;
 }
 
@@ -98,7 +98,7 @@ export default function VoiceRecorder({ verse, participantName, participantId, o
     }
     return () => {
       stopTimer();
-      if (recRef.current) { try { recRef.current.abort(); } catch {} }
+      if (recRef.current) { try { recRef.current.abort(); } catch { } }
     };
   }, []);
 
@@ -181,7 +181,7 @@ export default function VoiceRecorder({ verse, participantName, participantId, o
   }, [verse.text]);
 
   function stopListening() {
-    if (recRef.current) { try { recRef.current.stop(); } catch {} }
+    if (recRef.current) { try { recRef.current.stop(); } catch { } }
   }
 
   async function handleConfirm() {
@@ -234,7 +234,7 @@ export default function VoiceRecorder({ verse, participantName, participantId, o
         <div style={{ padding: '20px 24px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '5px' }}>
-              John {verse.chapter}:{verse.verse} &middot; {participantName}
+              1 John {verse.chapter}:{verse.verse} &middot; {participantName}
             </div>
             <div style={{ fontSize: '13px', color: 'var(--txt-2)', lineHeight: '1.6' }}>
               {verse.text}
@@ -391,8 +391,8 @@ export default function VoiceRecorder({ verse, participantName, participantId, o
                   {diff.map((d, i) => (
                     <span key={i} style={{
                       color: d.status === 'match' ? 'var(--txt)'
-                           : d.status === 'miss' ? 'var(--red)'
-                           : 'var(--amber)',
+                        : d.status === 'miss' ? 'var(--red)'
+                          : 'var(--amber)',
                       textDecoration: d.status === 'miss' ? 'line-through' : d.status === 'extra' ? 'underline' : 'none',
                       opacity: d.status === 'miss' ? 0.75 : 1,
                       padding: '0 2px',

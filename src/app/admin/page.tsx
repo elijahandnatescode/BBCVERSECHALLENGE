@@ -374,8 +374,8 @@ function AdminPageInner() {
               <div className="reveal-2"><StatCard icon={<ActivityIcon size={14} />} label="Active" value={stats.active} color="var(--accent)" /></div>
               {challengeId === 1 && (
                 <>
-                  <div className="reveal-3"><StatCard icon={<CheckCircleIcon size={14} />} label="John 1 done" value={stats.ch1Complete} color="var(--green)" /></div>
-                  <div className="reveal-4"><StatCard icon={<CheckCircleIcon size={14} />} label="John 2 done" value={stats.ch2Complete} color="var(--green)" /></div>
+                  <div className="reveal-3"><StatCard icon={<CheckCircleIcon size={14} />} label="1 John 1 done" value={stats.ch1Complete} color="var(--green)" /></div>
+                  <div className="reveal-4"><StatCard icon={<CheckCircleIcon size={14} />} label="1 John 2 done" value={stats.ch2Complete} color="var(--green)" /></div>
                 </>
               )}
               <div className="reveal-5"><StatCard icon={<BarChartIcon size={14} />} label="Overall" value={`${stats.overallPct}%`} color="var(--amber)" /></div>

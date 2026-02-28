@@ -294,7 +294,7 @@ export default function LoginPage() {
           </form>
         </div>
 
-        <p style={S.footer}>John 1 &amp; 2 · Memory Challenge</p>
+        <p style={S.footer}>1 John 1 &amp; 2 · Memory Challenge</p>
       </div>
     </div>
   );

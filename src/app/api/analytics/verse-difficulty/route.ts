@@ -52,9 +52,9 @@ export async function GET(req: NextRequest) {
     const key = `${row.chapter}:${row.verse}`;
     attemptMap.set(key, {
       attemptCount: Number(row.attempt_count),
-      avgScore:     Math.round(Number(row.avg_score) * 10) / 10,
-      failCount:    Number(row.fail_count),
-      passCount:    Number(row.pass_count),
+      avgScore: Math.round(Number(row.avg_score) * 10) / 10,
+      failCount: Number(row.fail_count),
+      passCount: Number(row.pass_count),
     });
   }
 
@@ -73,10 +73,10 @@ export async function GET(req: NextRequest) {
   }[] = [];
 
   for (const row of completionRes.rows) {
-    const ch    = Number(row.chapter);
-    const vNum  = Number(row.verse);
+    const ch = Number(row.chapter);
+    const vNum = Number(row.verse);
     const total = Number(row.total_participants);
-    const done  = Number(row.completed_count);
+    const done = Number(row.completed_count);
     const completionPct = total > 0 ? Math.round((done / total) * 100) : 0;
 
     // For challenge 1 (John 1&2) scope to known verse range
@@ -85,21 +85,21 @@ export async function GET(req: NextRequest) {
       if (ch === 2 && vNum > CH2_TOTAL) continue;
     }
 
-    const key     = `${ch}:${vNum}`;
+    const key = `${ch}:${vNum}`;
     const attempt = attemptMap.get(key);
 
-    const avgScore     = attempt?.avgScore ?? null;
+    const avgScore = attempt?.avgScore ?? null;
     const attemptCount = attempt?.attemptCount ?? 0;
-    const failCount    = attempt?.failCount ?? 0;
+    const failCount = attempt?.failCount ?? 0;
 
     const difficultyScore = avgScore !== null
       ? Math.round(avgScore * 0.6 + completionPct * 0.4)
       : completionPct;
 
     verses.push({
-      chapter:        ch,
-      verse:          vNum,
-      label:          `John ${ch}:${vNum}`,
+      chapter: ch,
+      verse: vNum,
+      label: `1 John ${ch}:${vNum}`,
       completionPct,
       avgScore,
       attemptCount,

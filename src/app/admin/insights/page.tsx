@@ -199,7 +199,7 @@ function InsightsPageInner() {
           {hardestVerses.map((h, i) => h ? (
             <StatCard
               key={i}
-              label={`Hardest — ${isDefault ? `John ${i + 1}` : challengeName}`}
+              label={`Hardest — ${isDefault ? `1 John ${i + 1}` : challengeName}`}
               value={h.label}
               sub={`${h.completionPct}% completion`}
               color="var(--red)"
@@ -225,7 +225,7 @@ function InsightsPageInner() {
                   cursor: 'pointer', textAlign: 'left',
                 }}>
                   <div style={{ fontSize: '12px', fontWeight: '600', color: active ? 'var(--accent)' : 'var(--txt-2)', marginBottom: '6px' }}>
-                    John {ch} &mdash; {vv.length}/{total} verses tracked
+                    1 John {ch} &mdash; {vv.length}/{total} verses tracked
                   </div>
                   <div style={{ background: 'var(--bg-hover)', borderRadius: '99px', height: '4px', overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${avg}%`, borderRadius: '99px', background: active ? 'var(--accent)' : 'var(--txt-3)' }} />
@@ -242,7 +242,7 @@ function InsightsPageInner() {
           borderRadius: '10px', padding: '16px 20px', marginBottom: '20px',
         }}>
           <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--txt-2)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '12px' }}>
-            Difficulty heatmap {isDefault ? `— John ${activeChapter}` : `— ${challengeName}`}
+            Difficulty heatmap {isDefault ? `— 1 John ${activeChapter}` : `— ${challengeName}`}
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
             {Array.from({ length: chTotal }, (_, i) => {
@@ -294,7 +294,7 @@ function InsightsPageInner() {
         <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden', marginBottom: '20px' }}>
           <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)' }}>
             <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--txt)' }}>
-              Completion rate {isDefault ? `— John ${activeChapter}` : `— ${challengeName}`}
+              Completion rate {isDefault ? `— 1 John ${activeChapter}` : `— ${challengeName}`}
             </span>
             <span style={{ fontSize: '11px', color: 'var(--txt-2)', marginLeft: '8px' }}>
               % of participants who have memorized each verse
@@ -362,7 +362,7 @@ function InsightsPageInner() {
           <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden', marginBottom: '20px' }}>
             <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)' }}>
               <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--txt)' }}>
-                Recording quality {isDefault ? `— John ${activeChapter}` : `— ${challengeName}`}
+                Recording quality {isDefault ? `— 1 John ${activeChapter}` : `— ${challengeName}`}
               </span>
               <span style={{ fontSize: '11px', color: 'var(--txt-2)', marginLeft: '8px' }}>
                 Based on voice recording sessions · sorted by fail rate

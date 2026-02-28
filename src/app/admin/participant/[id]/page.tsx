@@ -85,7 +85,7 @@ function ParticipantPageInner() {
   const [challengeVerses, setChallengeVerses] = useState<Array<{ verseNumber: number; verseText: string }>>([]);
   const [loading, setLoading] = useState(true);
 
-  // For challenge 1: John 1 / John 2 tabs; for others: single chapter
+  // For challenge 1: 1 John 1 / 1 John 2 tabs; for others: single chapter
   const [activeChapter, setActiveChapter] = useState<number>(challengeId === 1 ? 1 : -1);
 
   const [editing, setEditing] = useState(false);
@@ -130,7 +130,7 @@ function ParticipantPageInner() {
         setActiveChapter(cvData.challenge.chapterNum);
       }
     } else {
-      setChallengeDetail({ id: 1, name: 'John 1 & 2', book: 'John', chapterNum: 1, version: 'NIV' });
+      setChallengeDetail({ id: 1, name: '1 John 1 & 2', book: '1 John', chapterNum: 1, version: 'NKJV' });
       setActiveChapter(1);
     }
 
@@ -322,7 +322,7 @@ function ParticipantPageInner() {
   );
 
   const chapterLabel = challengeId === 1
-    ? `John ${activeChapter}`
+    ? `1 John ${activeChapter}`
     : challengeDetail ? `${challengeDetail.book} ${challengeDetail.chapterNum}` : '';
 
   return (
@@ -542,7 +542,7 @@ function ParticipantPageInner() {
                 <button key={ch} onClick={() => setActiveChapter(ch)} style={active ? btn('primary') : btn('secondary')}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
                     <div style={{ fontSize: '13px', fontWeight: '900' }}>
-                      John {ch} &mdash; {done}/{total}
+                      1 John {ch} &mdash; {done}/{total}
                     </div>
                   </div>
                 </button>

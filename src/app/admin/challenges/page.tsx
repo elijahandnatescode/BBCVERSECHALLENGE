@@ -55,8 +55,8 @@ export default function ChallengesPage() {
   // New challenge form state
   const [formMode, setFormMode] = useState<'library' | 'custom'>('library');
   const books = getBooks();
-  const [newBook, setNewBook] = useState(books[0] ?? 'John');
-  const [newChapter, setNewChapter] = useState<number>(getChapters(books[0] ?? 'John')[0] ?? 3);
+  const [newBook, setNewBook] = useState(books[0] ?? '1 John');
+  const [newChapter, setNewChapter] = useState<number>(getChapters(books[0] ?? '1 John')[0] ?? 3);
   const [customName, setCustomName] = useState('');
   const [customText, setCustomText] = useState('');
   const [creating, setCreating] = useState(false);

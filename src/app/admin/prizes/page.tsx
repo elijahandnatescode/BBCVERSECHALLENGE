@@ -99,7 +99,7 @@ function PrizesPageInner() {
                         <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden' }}>
                             <div style={{ background: 'rgba(235, 186, 52, 0.1)', borderBottom: '1px solid var(--border)', padding: '16px 20px' }}>
                                 <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#b38209', marginBottom: '4px' }}>Did All Passages</h3>
-                                <p style={{ fontSize: '13px', color: 'var(--txt-2)' }}>Completed John 1 AND John 2:1-11</p>
+                                <p style={{ fontSize: '13px', color: 'var(--txt-2)' }}>Completed 1 John 1 AND 1 John 2:1-11</p>
                                 <div style={{ fontSize: '12px', fontWeight: '600', color: '#b38209', marginTop: '8px' }}>
                                     {data2025?.allPassages.length ?? 0} participants
                                 </div>
@@ -125,7 +125,7 @@ function PrizesPageInner() {
                         <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden' }}>
                             <div style={{ background: 'var(--bg-hover)', borderBottom: '1px solid var(--border)', padding: '16px 20px' }}>
                                 <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--txt)', marginBottom: '4px' }}>At Least One Passage</h3>
-                                <p style={{ fontSize: '13px', color: 'var(--txt-2)' }}>Completed John 1 OR John 2:1-11</p>
+                                <p style={{ fontSize: '13px', color: 'var(--txt-2)' }}>Completed 1 John 1 OR 1 John 2:1-11</p>
                                 <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--txt)', marginTop: '8px' }}>
                                     {data2025?.atLeastOne.length ?? 0} participants
                                 </div>

@@ -92,6 +92,7 @@ function AdminPageInner() {
   const [toast, setToast] = useState('');
   const [lockingId, setLockingId] = useState<number | null>(null);
   const [showStats, setShowStats] = useState(false);
+  const [showAvatars, setShowAvatars] = useState(true);
 
   function showToast(msg: string) {
     setToast(msg);
@@ -318,7 +319,7 @@ function AdminPageInner() {
               <div className="reveal-5"><StatCard icon={<BarChartIcon size={14} />} label="Overall" value={`${stats.overallPct}%`} color="var(--amber)" /></div>
             </div>
 
-            <div style={{ ...card, padding: '16px 20px', marginBottom: '20px' }}>
+            <div style={{ ...card, padding: '16px 20px', marginBottom: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                 <span style={{ fontSize: '12px', color: 'var(--txt-2)', fontWeight: '500' }}>Total verse completions</span>
                 <span style={{ fontSize: '12px', color: 'var(--txt-2)', fontFamily: 'monospace' }}>
@@ -326,6 +327,15 @@ function AdminPageInner() {
                 </span>
               </div>
               <ProgressBar pct={stats.overallPct} gradient />
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
+              <button
+                onClick={() => setShowAvatars(!showAvatars)}
+                style={{ ...btn('ghost'), fontSize: '12px', padding: '4px 8px' }}
+              >
+                {showAvatars ? 'Hide avatars' : 'Show avatars'}
+              </button>
             </div>
           </div>
         )}
@@ -400,6 +410,7 @@ function AdminPageInner() {
                   p={p}
                   last={i === filtered.length - 1}
                   locking={lockingId === p.id}
+                  showAvatars={showAvatars}
                   onOpen={() => handleLockAndOpen(p)}
                   onUnlock={() => handleUnlock(p)}
                   onRename={(first, last) => handleRename(p, first, last)}
@@ -458,8 +469,8 @@ function ProgressBar({ pct, gradient, height = 5 }: { pct: number; gradient?: bo
 }
 
 /* ── ParticipantRow ───────────────────────────────────────────────────────── */
-function ParticipantRow({ p, last, locking, onOpen, onUnlock, onRename }: {
-  p: Participant; last: boolean; locking: boolean;
+function ParticipantRow({ p, last, locking, showAvatars = true, onOpen, onUnlock, onRename }: {
+  p: Participant; last: boolean; locking: boolean; showAvatars?: boolean;
   onOpen: () => void; onUnlock: () => void;
   onRename: (first: string, last: string) => Promise<void>;
 }) {
@@ -503,15 +514,17 @@ function ParticipantRow({ p, last, locking, onOpen, onUnlock, onRename }: {
       opacity: p.optedOut ? 0.55 : 1,
     }}>
       {/* Avatar */}
-      <div style={{
-        width: '34px', height: '34px', borderRadius: '50%', flexShrink: 0,
-        background: `hsl(${(p.id * 53) % 360},35%,22%)`,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: '12px', fontWeight: '600', color: 'var(--txt-2)',
-        border: done ? '1.5px solid var(--green)' : '1.5px solid var(--border)',
-      }}>
-        {p.firstName[0]}{p.lastName[0]}
-      </div>
+      {showAvatars && (
+        <div style={{
+          width: '34px', height: '34px', borderRadius: '50%', flexShrink: 0,
+          background: `hsl(${(p.id * 53) % 360},35%,22%)`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: '12px', fontWeight: '600', color: 'var(--txt-2)',
+          border: done ? '1.5px solid var(--green)' : '1.5px solid var(--border)',
+        }}>
+          {p.firstName[0]}{p.lastName[0]}
+        </div>
+      )}
 
       {/* Name + progress */}
       <div style={{ flex: 1, minWidth: 0 }}>

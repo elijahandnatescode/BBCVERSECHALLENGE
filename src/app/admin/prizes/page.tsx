@@ -151,7 +151,7 @@ function PrizesPageInner() {
                         <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden' }}>
                             <div style={{ borderBottom: '1px solid var(--border)', padding: '16px 20px' }}>
                                 <h3 style={{ fontSize: '15px', fontWeight: '600', color: 'var(--txt)', marginBottom: '4px' }}>Participated</h3>
-                                <p style={{ fontSize: '13px', color: 'var(--txt-2)' }}>Finished at least one verse but missed some passages.</p>
+                                <p style={{ fontSize: '13px', color: 'var(--txt-2)' }}>Said at least one verse.</p>
                                 <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--txt-2)', marginTop: '8px' }}>
                                     {data2025?.participated.length ?? 0} participants
                                 </div>

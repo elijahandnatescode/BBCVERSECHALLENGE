@@ -187,6 +187,18 @@ function AdminPageInner() {
     else showToast(data.message);
   }
 
+  async function handleDelete(p: Participant) {
+    if (!window.confirm(`Delete ${p.firstName} ${p.lastName}? This cannot be undone.`)) return;
+    const res = await fetch(`/api/participants/${p.id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (data.success) {
+      showToast('Participant deleted');
+      fetchAll(search);
+    } else {
+      showToast(data.message || 'Failed to delete');
+    }
+  }
+
   async function handleAdd() {
     if (!newFirst.trim() || !newLast.trim()) return;
     const res = await fetch('/api/participants', {
@@ -505,6 +517,7 @@ function AdminPageInner() {
                   onOpen={() => handleLockAndOpen(p)}
                   onUnlock={() => handleUnlock(p)}
                   onRename={(first, last) => handleRename(p, first, last)}
+                  onDelete={() => handleDelete(p)}
                 />
               ))}
             </div>
@@ -560,10 +573,11 @@ function ProgressBar({ pct, gradient, height = 5 }: { pct: number; gradient?: bo
 }
 
 /* ── ParticipantRow ───────────────────────────────────────────────────────── */
-function ParticipantRow({ p, last, locking, showAvatars = true, onOpen, onUnlock, onRename }: {
+function ParticipantRow({ p, last, locking, showAvatars = true, onOpen, onUnlock, onRename, onDelete }: {
   p: Participant; last: boolean; locking: boolean; showAvatars?: boolean;
   onOpen: () => void; onUnlock: () => void;
   onRename: (first: string, last: string) => Promise<void>;
+  onDelete: () => void;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editFirst, setEditFirst] = useState(p.firstName);
@@ -714,6 +728,21 @@ function ParticipantRow({ p, last, locking, showAvatars = true, onOpen, onUnlock
             title={lockedByOther ? `Locked by ${p.lockedByUsername}` : 'Lock & open to edit'}
           >
             <UnlockIcon size={13} />
+          </button>
+        )}
+        {!p.isLockedByMe && (
+          <button
+            onClick={onDelete}
+            disabled={lockedByOther}
+            style={{
+              ...btn('ghost'),
+              color: lockedByOther ? 'var(--txt-3)' : 'var(--red, #e05252)',
+              cursor: lockedByOther ? 'not-allowed' : 'pointer',
+              border: `var(--base-border-width) solid ${lockedByOther ? 'var(--border)' : 'rgba(224,82,82,0.3)'}`,
+            }}
+            title={lockedByOther ? `Locked by ${p.lockedByUsername}` : 'Delete participant'}
+          >
+            <XIcon size={13} />
           </button>
         )}
       </div>

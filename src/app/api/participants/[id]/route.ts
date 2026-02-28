@@ -80,3 +80,21 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   });
   return NextResponse.json({ success: true });
 }
+
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const session = await getSession();
+  if (!session) return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+
+  const { id } = await params;
+  const db = getDb();
+
+  // Delete all related records first, then the participant
+  await db.execute({ sql: 'DELETE FROM locks WHERE participant_id = ?', args: [id] });
+  await db.execute({ sql: 'DELETE FROM verse_attempts WHERE participant_id = ?', args: [id] });
+  await db.execute({ sql: 'DELETE FROM progress WHERE participant_id = ?', args: [id] });
+  await db.execute({ sql: 'DELETE FROM participant_challenge_optouts WHERE participant_id = ?', args: [id] });
+  await db.execute({ sql: 'DELETE FROM participants WHERE id = ?', args: [id] });
+
+  return NextResponse.json({ success: true });
+}
+

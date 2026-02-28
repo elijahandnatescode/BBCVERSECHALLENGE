@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
       LEFT JOIN locks l ON l.participant_id = p.id
       LEFT JOIN admins a ON a.id = l.admin_id
       WHERE p.first_name LIKE ? OR p.last_name LIKE ?
-      ORDER BY p.last_name ASC, p.first_name ASC
+      ORDER BY LOWER(p.last_name) ASC, LOWER(p.first_name) ASC
     `,
     args: [c, c, c, `%${q}%`, `%${q}%`],
   });

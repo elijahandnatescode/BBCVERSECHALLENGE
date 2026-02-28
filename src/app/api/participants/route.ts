@@ -71,9 +71,13 @@ export async function POST(req: NextRequest) {
       args: [cid],
     });
     for (const v of versesRes.rows) {
+      const rawVerse = Number(v.verse_number);
+      // Verse numbers >= 100 encode chapter 2 (e.g. 101 = ch2 v1, 129 = ch2 v29)
+      const chapter = rawVerse >= 100 ? 2 : Number(ch.chapter_num);
+      const verse = rawVerse >= 100 ? rawVerse - 100 : rawVerse;
       await db.execute({
         sql: 'INSERT OR IGNORE INTO progress (participant_id, chapter, verse, completed, challenge_id) VALUES (?, ?, ?, 0, ?)',
-        args: [pid, Number(ch.chapter_num), Number(v.verse_number), cid],
+        args: [pid, chapter, verse, cid],
       });
     }
   }

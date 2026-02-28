@@ -39,7 +39,8 @@ export async function GET(req: NextRequest) {
 
         if (didJ1 && didJ2) {
             allPassages.push(name);
-        } else if (didJ1 || didJ2) {
+        }
+        if (didJ1 || didJ2) {
             atLeastOne.push(name);
         } else if (total > 0) {
             participated.push(name);

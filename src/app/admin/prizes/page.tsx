@@ -104,10 +104,14 @@ function PrizesPageInner() {
                                     {data2025?.allPassages.length ?? 0} participants
                                 </div>
                             </div>
-                            <div style={{ padding: '20px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                            <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                 {data2025?.allPassages.length ? (
-                                    data2025.allPassages.map(name => (
-                                        <span key={name} style={{ background: 'var(--bg-hover)', padding: '6px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', color: 'var(--txt)' }}>
+                                    [...data2025.allPassages].sort((a, b) => {
+                                        const lastA = a.split(' ').pop() || '';
+                                        const lastB = b.split(' ').pop() || '';
+                                        return lastA.localeCompare(lastB);
+                                    }).map(name => (
+                                        <span key={name} style={{ background: 'var(--bg-hover)', padding: '8px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', color: 'var(--txt)' }}>
                                             {name}
                                         </span>
                                     ))
@@ -126,10 +130,14 @@ function PrizesPageInner() {
                                     {data2025?.atLeastOne.length ?? 0} participants
                                 </div>
                             </div>
-                            <div style={{ padding: '20px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                            <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                 {data2025?.atLeastOne.length ? (
-                                    data2025.atLeastOne.map(name => (
-                                        <span key={name} style={{ background: 'var(--bg-hover)', padding: '6px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', color: 'var(--txt)' }}>
+                                    [...data2025.atLeastOne].sort((a, b) => {
+                                        const lastA = a.split(' ').pop() || '';
+                                        const lastB = b.split(' ').pop() || '';
+                                        return lastA.localeCompare(lastB);
+                                    }).map(name => (
+                                        <span key={name} style={{ background: 'var(--bg-hover)', padding: '8px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', color: 'var(--txt)' }}>
                                             {name}
                                         </span>
                                     ))
@@ -148,11 +156,26 @@ function PrizesPageInner() {
                                     {data2025?.participated.length ?? 0} participants
                                 </div>
                             </div>
-                            <div style={{ padding: '20px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                            <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                 {data2025?.participated.length ? (
-                                    data2025.participated.map(name => (
-                                        <span key={name} style={{ border: '1px solid var(--border)', padding: '5px 10px', borderRadius: '6px', fontSize: '12px', color: 'var(--txt-2)' }}>
+                                    [...data2025.participated].sort((a, b) => {
+                                        const lastA = a.split(' ').pop() || '';
+                                        const lastB = b.split(' ').pop() || '';
+                                        return lastA.localeCompare(lastB);
+                                    }).map(name => (
+                                        <span key={name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px', border: '1px solid var(--border)', padding: '6px 10px', borderRadius: '6px', fontSize: '13px', color: 'var(--txt-2)' }}>
                                             {name}
+                                            <select style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '4px', fontSize: '11px', padding: '2px 4px', color: 'var(--txt)', cursor: 'pointer' }}>
+                                                <option value="" disabled selected>Size</option>
+                                                <option value="YS">YS</option>
+                                                <option value="YM">YM</option>
+                                                <option value="YL">YL</option>
+                                                <option value="YXL">YXL</option>
+                                                <option value="S">S</option>
+                                                <option value="M">M</option>
+                                                <option value="L">L</option>
+                                                <option value="XL">XL</option>
+                                            </select>
                                         </span>
                                     ))
                                 ) : (
